@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pandas
+tqdm
+transformers
+torch
+requests
+matplotlib
+wordcloud
+seaborn
+nltk
+scikit-learn
+gensim
+sentence_transformers
+imblearn
