@@ -36,7 +36,7 @@ class Embeddings:
         except Exception as e:
             print(f"Errore durante il calcolo del TF-IDF: {e}")
 
-    def apply_word2vec_embedding(self, vector_size=100, window=5, min_count=1):
+    def apply_word2vec_embedding(self, vector_size=300, window=25, min_count=1):
         """
         Genera embeddings Word2Vec dai testi tokenizzati.
         """
