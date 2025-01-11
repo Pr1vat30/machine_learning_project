@@ -47,7 +47,7 @@ class Embeddings:
                 vector_size=vector_size,
                 window=window,
                 min_count=min_count,
-                workers=5,
+                workers=4,
             )
             word2vec_embeddings = np.array(
                 [
