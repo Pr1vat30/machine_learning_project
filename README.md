@@ -6,10 +6,10 @@ TeachTuner è un’applicazione progettata per applicare tecniche di analisi del
 
 **Caratteristiche principali**:
 
-- Raccolta di commenti tramite form personalizzati.\
-- Preprocessing e normalizzazione dei dati testuali.\
-- Utilizzo di modelli di machine learning e deep learning per l’analisi del sentiment.\
-- Presentazione dei risultati tramite report visuali e metriche.\
+- Raccolta di commenti tramite form personalizzati.
+- Preprocessing e normalizzazione dei dati testuali.
+- Utilizzo di modelli di machine learning e deep learning per l’analisi del sentiment.
+- Presentazione dei risultati tramite report visuali e metriche.
 
 **Tecnologie Utilizzate**:
 
