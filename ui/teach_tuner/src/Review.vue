@@ -23,7 +23,7 @@ const { toast } = useToast();
 // Schema di validazione per il campo bio
 const formSchema = toTypedSchema(
   z.object({
-    bio: z
+    comment: z
       .string()
       .min(10, "La bio deve essere lunga almeno 10 caratteri")
       .max(300, "La bio non può superare i 300 caratteri"),
@@ -33,7 +33,7 @@ const formSchema = toTypedSchema(
 const { isFieldDirty, handleSubmit } = useForm({
   validationSchema: formSchema,
   initialValues: {
-    bio: "", // Impostiamo il valore iniziale per il campo bio
+    comment: "", // Impostiamo il valore iniziale per il campo bio
   },
 });
 
@@ -57,7 +57,7 @@ const onSubmit = handleSubmit(async (values) => {
       },
       body: JSON.stringify({
         id: route.query.id,
-        comment: values.bio,
+        comment: values.comment,
       }),
     });
 
@@ -87,7 +87,7 @@ const onSubmit = handleSubmit(async (values) => {
         { class: "mt-2 w-[340px] rounded-md bg-red-950 p-4" },
         h("code", { class: "text-white" }, error.message),
       ),
-      duration: 5000, // Puoi personalizzare la durata del toast
+      duration: 5000,
     });
   }
 });
@@ -102,33 +102,38 @@ const onSubmit = handleSubmit(async (values) => {
         @submit="onSubmit"
       >
         <div>
-          <h1 class="text-3xl">Forms Builder</h1>
+          <h1 class="text-3xl max-sm:text-xl">Reviews Collection</h1>
         </div>
 
         <!-- Stampa id, username e bio -->
         <div class="space-y-2">
-          <p><strong>ID:</strong> {{ route.query.id }}</p>
-          <p><strong>Username:</strong> {{ route.query.username }}</p>
-          <p><strong>Bio:</strong> {{ route.query.bio }}</p>
+          <h1 class="text-sm">
+            <span class="font-bold">Activity: </span
+            >{{ route.query.activity_name }}
+          </h1>
+          <h1 class="text-sm">
+            <span class="font-bold">Description: </span
+            >{{ route.query.description }}
+          </h1>
         </div>
 
         <!-- Campo Bio -->
         <FormField
           v-slot="{ componentField }"
-          name="bio"
+          name="comment"
           :validate-on-blur="!isFieldDirty"
         >
           <FormItem v-auto-animate>
-            <FormLabel>Bio</FormLabel>
+            <FormLabel>Comment</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Tell us a little bit about yourself"
+                placeholder="Write whatever you want"
                 class="resize-none"
                 v-bind="componentField"
               />
             </FormControl>
             <FormDescription>
-              You can <span>@mention</span> other users and organizations.
+              You can <span>@mention</span> other activity.
             </FormDescription>
             <FormMessage />
           </FormItem>

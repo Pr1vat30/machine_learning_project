@@ -5,8 +5,9 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import random, json, os
 
-use = UseScript("./api/model/sentiment_model_tfidf.pkl")
+DATA_FILE = "data.json"
 
+use = UseScript("./api/model/deployed_model.pkl")
 app = FastAPI()
 
 app.add_middleware(
@@ -16,22 +17,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-
-
 class InputData(BaseModel):
-    username: str
-    bio: str
-    marketing_emails: bool
+    activity_name: str
+    description: str
+    allow_visibility: bool
 
-DATA_FILE = "data.json"
+class CommentRequest(BaseModel):
+    id: str
+    comment: str
 
 def generate_unique_id(existing_ids):
     """Genera un ID univoco a 6 cifre che non è già presente."""
@@ -61,13 +54,13 @@ async def save_data(data: InputData):
     # Crea un dizionario per i dati ricevuti, includendo l'ID, data, numero_commenti e commenti
     data_with_id = {
         "id": unique_id,
-        "username": data.username,
-        "bio": data.bio,
-        "marketing_emails": data.marketing_emails,
+        "activity_name": data.activity_name,
+        "description": data.description,
+        "visibility": data.allow_visibility,
         "status": "Active",
-        "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Data di salvataggio nel formato "YYYY-MM-DD HH:MM:SS"
-        "numero_commenti": 0,  # Numero di commenti, inizialmente 0
-        "commenti": {},  # Commenti vuoti inizialmente
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "n_comment": 0,
+        "comments": {},
     }
 
     # Aggiunge i nuovi dati a quelli esistenti
@@ -79,7 +72,21 @@ async def save_data(data: InputData):
 
     return {"message": "Data saved successfully", "id": unique_id}
 
+@app.get("/get-data/")
+async def get_data():
+    # Controlla se il file JSON esiste
+    if not os.path.exists(DATA_FILE):
+        raise HTTPException(status_code=404, detail="Data file not found")
 
+    # Legge i dati dal file JSON
+    with open(DATA_FILE, "r") as file:
+        try:
+            data = json.load(file)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=500, detail="Data file is corrupted")
+
+    # Restituisce tutti i dati
+    return {"message": "Data retrieved successfully", "data": data}
 
 @app.get("/get-data/{item_id}")
 async def get_data(item_id: int):
@@ -102,49 +109,34 @@ async def get_data(item_id: int):
     # Se l'ID non è trovato, solleva un errore
     raise HTTPException(status_code=404, detail="Item not found")
 
-
-
-
-# Struttura del commento da ricevere
-class CommentRequest(BaseModel):
-    id: str
-    comment: str
-
-# Funzione per caricare i dati dal file JSON esistente (se presente)
-def load_data():
-    try:
-        with open('data.json', 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
-
-
-
-
-# Endpoint per aggiungere un commento
 @app.post("/add_comment/")
 async def add_comment(request: CommentRequest):
     # Carica i dati esistenti dal file
-    data = load_data()
+    try:
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        data = []
 
     # Cerca l'utente nel file usando l'id
-    for user in data:
-        if user['id'] == request.id:
+    for entry in data:
+        if entry['id'] == request.id:
 
-            c_id = str(len(user['commenti']) + 1)
+            c_id = str(len(entry['comments']) + 1)
 
             print(use.use_model(request.comment))
 
             new_comment = {
-                "comento": request.comment,
-                "sentimento": use.use_model(request.comment),
+                "comment": request.comment,
+                "sentiment": use.use_model(request.comment),
+                "date": datetime.now().strftime("%Y-%m-%d"),
             }
 
             # Aggiungi il nuovo commento alla lista
-            user['commenti'][c_id] = new_comment
+            entry['comments'][c_id] = new_comment
 
             # Aggiorna il numero dei commenti
-            user['numero_commenti'] = str(len(user['commenti']))
+            entry['n_comment'] = str(len(entry['comments']))
             break
 
     # Salva i dati aggiornati nel file
@@ -156,18 +148,3 @@ async def add_comment(request: CommentRequest):
 
 
 
-@app.get("/get-data/")
-async def get_data():
-    # Controlla se il file JSON esiste
-    if not os.path.exists(DATA_FILE):
-        raise HTTPException(status_code=404, detail="Data file not found")
-
-    # Legge i dati dal file JSON
-    with open(DATA_FILE, "r") as file:
-        try:
-            data = json.load(file)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=500, detail="Data file is corrupted")
-
-    # Restituisce tutti i dati
-    return {"message": "Data retrieved successfully", "data": data}

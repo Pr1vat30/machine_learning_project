@@ -24,16 +24,16 @@ const { toast } = useToast();
 
 const formSchema = toTypedSchema(
   z.object({
-    username: z.string().min(2).max(50),
-    bio: z
+    activity_name: z.string().min(2).max(50),
+    description: z
       .string()
       .min(10, {
-        message: "Bio must be at least 10 characters.",
+        message: "description must be at least 10 characters.",
       })
       .max(160, {
-        message: "Bio must not be longer than 30 characters.",
+        message: "description must not be longer than 30 characters.",
       }),
-    marketing_emails: z.boolean().default(true),
+    allow_visibility: z.boolean().default(true),
   }),
 );
 
@@ -102,48 +102,50 @@ const onSubmit = handleSubmit(async (values) => {
 
       <FormField
         v-slot="{ componentField }"
-        name="username"
+        name="activity_name"
         :validate-on-blur="!isFieldDirty"
       >
         <FormItem v-auto-animate>
-          <FormLabel>Username</FormLabel>
+          <FormLabel>Activity Name</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="shadcn" v-bind="componentField" />
+            <Input type="text" placeholder="Example" v-bind="componentField" />
           </FormControl>
-          <FormDescription> This is your public display name. </FormDescription>
+          <FormDescription>
+            This is the name of the activity to be reviewed.
+          </FormDescription>
           <FormMessage />
         </FormItem>
       </FormField>
 
       <FormField
         v-slot="{ componentField }"
-        name="bio"
+        name="description"
         :validate-on-blur="!isFieldDirty"
       >
         <FormItem v-auto-animate>
-          <FormLabel>Bio</FormLabel>
+          <FormLabel>Description</FormLabel>
           <FormControl>
             <Textarea
-              placeholder="Tell us a little bit about yourself"
+              placeholder="Describe the aspects of the activity you want reviewed"
               class="resize-none"
               v-bind="componentField"
             />
           </FormControl>
           <FormDescription>
-            You can <span>@mention</span> other users and organizations.
+            You can insert <span>@mention</span> to other activity.
           </FormDescription>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ value, handleChange }" name="marketing_emails">
+      <FormField v-slot="{ value, handleChange }" name="allow_visibility">
         <FormItem
           class="flex flex-row items-center justify-between rounded-lg border p-4"
         >
           <div class="space-y-0.5 mr-3">
-            <FormLabel class="text-base"> Marketing emails </FormLabel>
+            <FormLabel class="text-base"> Form Visibility </FormLabel>
             <FormDescription>
-              Receive emails about new products, features, and more.
+              Allow all people who have the code to view the form
             </FormDescription>
           </div>
           <FormControl>

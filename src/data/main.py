@@ -3,6 +3,7 @@ import data_collection.labeling as d_labeling
 import data_collection.randomizer as d_randomizer
 import data_collection.merging as d_merging
 import data_analysis.stats as d_stats
+import data_analysis.utils as d_utils
 
 from data_collection.generating import OllamaService
 from data_processing.processing import Preprocessor
@@ -23,12 +24,14 @@ def randomizer(input_dataset, output_dataset, sample_size=None):
         print("Sample size error, randomized 100000 entry")
 
 def merging(first_input_dataset, second_input_dataset, output_dataset):
-   d_merging.merge_csv_files(
+    d_utils.Utils.remove_void_or_null(first_input_dataset)
+    d_utils.Utils.remove_void_or_null(second_input_dataset)
+    d_merging.merge_csv_files(
        file1=first_input_dataset,
        file2=second_input_dataset,
        output_file=output_dataset,
-   )
-   print("Dataset merged successfully")
+    )
+    print("Dataset merged successfully")
 
 def generate(input_dataset, output_dataset, sentiment, mode=None):
     if mode == "adjust":

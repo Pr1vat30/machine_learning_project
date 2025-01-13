@@ -35,73 +35,67 @@ import { Search, ChevronRight } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import { Donut, GroupedBar } from "@unovis/ts";
 
-const data_2 = [
-  {
-    name: "Jan",
-    total: Math.floor(Math.random() * 20) + 500,
-    predicted: Math.floor(Math.random() * 20) + 500,
-  },
-  {
-    name: "Feb",
-    total: Math.floor(Math.random() * 20) + 500,
-    predicted: Math.floor(Math.random() * 20) + 500,
-  },
-  {
-    name: "Mar",
-    total: Math.floor(Math.random() * 20) + 500,
-    predicted: Math.floor(Math.random() * 20) + 500,
-  },
-  {
-    name: "Apr",
-    total: Math.floor(Math.random() * 20) + 500,
-    predicted: Math.floor(Math.random() * 20) + 500,
-  },
-  {
-    name: "May",
-    total: Math.floor(Math.random() * 20) + 500,
-    predicted: Math.floor(Math.random() * 20) + 500,
-  },
-  {
-    name: "Jun",
-    total: Math.floor(Math.random() * 20) + 500,
-    predicted: Math.floor(Math.random() * 20) + 500,
-  },
-  {
-    name: "Jul",
-    total: Math.floor(Math.random() * 20) + 500,
-    predicted: Math.floor(Math.random() * 20) + 500,
-  },
-];
-
-type DataRecord = {
-  x: number;
-  y: number;
-  y1?: number;
-  y2?: number;
-};
-
-type DataRecord2 = {
-  x: string;
-  y: number;
-  y1?: number;
-};
-
-const x2 = (d: { x2: number }) => d.x2; // Mappatura per X
-const y2 = [
-  (d: { y1: number }) => d.y1,
-  (d: { y2: number }) => d.y2,
-  (d: { y3: number }) => d.y3,
-]; // Mappatura per Y
-
-const props = defineProps<{ data: DataRecord[]; data_2: DataRecord2[] }>();
+const Spacing = { top: 16, bottom: 16, left: 16, right: 16 };
 
 /* -------------------- Bar data----------------------- */
 
-const bar_data = [
-  { x: 1, y1: 54, y2: 32, y3: 36 },
-  { x: 2, y1: 43, y2: 32, y3: 12 },
-  { x: 3, y1: 9, y2: 45, y3: 34 },
-];
+function getCommentsThisWeek(jsonData) {
+  // Array dei giorni della settimana
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  // Inizializzazione dei contatori per ogni giorno della settimana
+  const sentimentCounts = [
+    { x: 1, y1: 0, y2: 0, y3: 0 }, // Monday
+    { x: 2, y1: 0, y2: 0, y3: 0 }, // Tuesday
+    { x: 3, y1: 0, y2: 0, y3: 0 }, // Wednesday
+    { x: 4, y1: 0, y2: 0, y3: 0 }, // Thursday
+    { x: 5, y1: 0, y2: 0, y3: 0 }, // Friday
+    { x: 6, y1: 0, y2: 0, y3: 0 }, // Saturday
+    { x: 7, y1: 0, y2: 0, y3: 0 }, // Sunday
+  ];
+
+  // Data corrente
+  const today = new Date();
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(today.getDate() - 7);
+
+  jsonData.forEach((activity) => {
+    Object.keys(activity.comments).forEach((key) => {
+      const comment = activity.comments[key];
+      const commentDate = new Date(comment.date);
+
+      // Considera solo i commenti negli ultimi 7 giorni
+      if (commentDate >= sevenDaysAgo && commentDate <= today) {
+        const dayOfWeek = commentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+        // Mappa il giorno della settimana: Sunday = 0, Monday = 1, ..., Saturday = 6
+        // Aggiustiamo l'indice per far partire da 1 (Monday = 1)
+        const sentimentIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+        // Conta i sentimenti
+        if (comment.sentiment === "positive") {
+          sentimentCounts[sentimentIndex].y1++;
+        } else if (comment.sentiment === "negative") {
+          sentimentCounts[sentimentIndex].y2++;
+        } else if (comment.sentiment === "neutral") {
+          sentimentCounts[sentimentIndex].y3++;
+        }
+      }
+    });
+  });
+
+  return sentimentCounts;
+}
+
+let bar_data = [{}, {}, {}];
 
 const dayMap = {
   1: "Lunedì",
@@ -124,11 +118,23 @@ const bar_triggers = {
   [GroupedBar.selectors.bar]: (d, index) => {
     // Determina quale barra è stata selezionata e restituisce il valore corretto
     if (index % 3 === 0) {
-      return d.y1; // Restituisce y1 per gli indici 0, 3, 6, ...
+      if (d.y1 != 0) {
+        return d.y1; // Restituisce y1 per gli indici 0, 3, 6, ...
+      } else {
+        return "0"; // Restituisce "0" esplicito se d.y1 è 0
+      }
     } else if (index % 3 === 1) {
-      return d.y2; // Restituisce y2 per gli indici 1, 4, 7, ...
+      if (d.y2 != 0) {
+        return d.y2; // Restituisce y2 per gli indici 1, 4, 7, ...
+      } else {
+        return "0"; // Restituisce "0" esplicito se d.y2 è 0
+      }
     } else if (index % 3 === 2) {
-      return d.y3; // Restituisce y3 per gli indici 2, 5, 8, ...
+      if (d.y3 != 0) {
+        return d.y3; // Restituisce y3 per gli indici 2, 5, 8, ...
+      } else {
+        return "0"; // Restituisce "0" esplicito se d.y3 è 0
+      }
     }
     return null; // Se non corrisponde, non mostra nessun valore
   },
@@ -145,12 +151,12 @@ const calculateSentiments = (data) => {
   const sentimentCount = [0, 0, 0];
   const commentsArray = Object.values(data.value);
 
-  commentsArray.forEach((commento) => {
-    if (commento.sentimento === "positive") {
+  commentsArray.forEach((comment) => {
+    if (comment.sentiment === "positive") {
       sentimentCount[0] += 1;
-    } else if (commento.sentimento === "negative") {
+    } else if (comment.sentiment === "negative") {
       sentimentCount[1] += 1;
-    } else if (commento.sentimento === "neutral") {
+    } else if (comment.sentiment === "neutral") {
       sentimentCount[2] += 1;
     }
   });
@@ -166,7 +172,7 @@ const donut_triggers = { [Donut.selectors.segment]: (d) => d.data };
 const isLoaded = ref(false);
 
 const codeInput = ref([]);
-const users = ref<any[]>([]);
+const form = ref<any[]>([]);
 const comment = ref<any[]>([]);
 
 const enterCode = async () => {
@@ -184,11 +190,15 @@ const enterCode = async () => {
       const data = await response.json();
       console.log("Dati ricevuti:", data.data);
 
-      users.value = data.data; // Salva gli utenti nello stato
-      comment.value = data.data.commenti;
+      form.value = data.data; // Salva gli utenti nello stato
+      comment.value = data.data.comments;
 
       isLoaded.value = true; // Carica i contenuti
       donut_data = calculateSentiments(comment);
+
+      const datat = getCommentsThisWeek([data.data]);
+      bar_data = datat;
+      console.log(datat);
     } else {
       const errorData = await response.json();
       alert(`Errore: ${errorData.detail || "Qualcosa è andato storto"}`);
@@ -216,7 +226,7 @@ onMounted(() => {});
               <Input
                 type="search"
                 v-model="codeInput"
-                placeholder="Search products ..."
+                placeholder="Insert id form... "
                 class="ml-0.5 pl-8 sm:w-[200px] md:w-[200px] lg:w-[200px] h-7 border-0 shadow-md"
               />
               <Button
@@ -237,9 +247,9 @@ onMounted(() => {});
       <div v-if="isLoaded" class="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
           <div
-            class="aspect-video rounded-xl bg-white/80 border-0 shadow-md flex flex-col items-center gap-2 p-4"
+            class="lg:col-span-1 sm:col-span-full rounded-xl bg-white/80 border-0 shadow-md flex flex-col items-center gap-2"
           >
-            <VisSingleContainer :data="donut_data">
+            <VisSingleContainer :data="donut_data" :margin="Spacing">
               <VisTooltip :triggers="donut_triggers" class-name="" />
               <VisDonut
                 :radius="80"
@@ -248,38 +258,44 @@ onMounted(() => {});
                 centralLabel="Label"
               />
             </VisSingleContainer>
-            <VisBulletLegend :items="items" />
+            <VisBulletLegend :items="items" class="pb-4 items-center" />
           </div>
           <div
-            class="aspect-video rounded-xl bg-white/80 border-0 shadow-md flex flex-col items-center gap-2 p-4"
+            class="lg:col-span-2 sm:col-span-full rounded-xl bg-white/80 border-0 shadow-md flex flex-col items-center gap-2"
           >
-            <VisXYContainer :data="bar_data">
-              <VisAxis type="x" :x="x" :tickFormat="tickFormat" />
+            <VisXYContainer
+              :data="bar_data"
+              :yDomain="[
+                0,
+                Math.max(
+                  ...bar_data.flatMap((item) => [item.y1, item.y2, item.y3]),
+                ) * 2,
+              ]"
+              :margin="Spacing"
+            >
+              <VisAxis
+                type="x"
+                :x="x"
+                :tickFormat="tickFormat"
+                tickTextFitMode="trim"
+                :numTicks="7"
+              />
               <VisAxis type="y" />
               <VisTooltip :triggers="bar_triggers" class-name="" />
               <VisGroupedBar :x="x" :y="y" />
             </VisXYContainer>
-            <VisBulletLegend :items="items" />
-          </div>
-          <div
-            class="aspect-video rounded-xl bg-white/80 border-0 shadow-md flex flex-col items-center gap-2 p-4"
-          >
-            <VisXYContainer :data="data">
-              <VisAxis type="x" />
-              <VisAxis type="y" />
-              <VisTooltip :triggers="triggers" class-name="" />
-              <VisArea :x="x2" :y="y2" />
-            </VisXYContainer>
-            <VisBulletLegend :items="items" />
+            <VisBulletLegend :items="items" class="pb-4 items-center" />
           </div>
         </div>
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
           <div class="h-[100vh] md:min-h-min col-span-3">
-            <Card class="w-full rounded-xl bg-white/80 border-0 shadow-md">
+            <Card
+              class="w-full max-h-screen overflow-y-auto rounded-xl bg-white/80 border-0 shadow-md"
+            >
               <CardHeader>
-                <CardTitle>Users</CardTitle>
+                <CardTitle>Comment</CardTitle>
                 <CardDescription>
-                  Manage your users and view their information.
+                  View user comment information.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -287,8 +303,8 @@ onMounted(() => {});
                   <TableHeader>
                     <TableRow>
                       <TableHead>Id</TableHead>
-                      <TableHead class="w-full"> Commento </TableHead>
-                      <TableHead class="">Sentimento</TableHead>
+                      <TableHead class="w-full">Comment</TableHead>
+                      <TableHead class="">Sentiment</TableHead>
                     </TableRow>
                   </TableHeader>
 
@@ -300,11 +316,11 @@ onMounted(() => {});
                     >
                       <TableCell>{{ index + 1 }}</TableCell>
                       <TableCell class="max-w-12 overflow-hidden text-ellipsis">
-                        {{ comment.comento }}
+                        {{ comment.comment }}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {{ comment.sentimento }}
+                          {{ comment.sentiment }}
                         </Badge>
                       </TableCell>
                     </TableRow>

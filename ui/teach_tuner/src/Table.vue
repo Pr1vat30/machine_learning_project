@@ -31,8 +31,12 @@ import { File, ListFilter, MoreHorizontal, PlusCircle } from "lucide-vue-next";
 
 import { onMounted, ref } from "vue";
 
+function goToForm() {
+  window.location.href = `http://localhost:5173/dashboard#/form`;
+}
+
 // Crea uno stato per i dati da visualizzare nella tabella
-const users = ref<any[]>([]);
+const forms = ref<any[]>([]);
 
 const enterCode = async () => {
   try {
@@ -44,8 +48,8 @@ const enterCode = async () => {
       console.log("Dati ricevuti:", data.data);
 
       // Verifica che i dati siano nel formato corretto e salvali
-      if (Array.isArray(data.data) && data.data.length > 0) {
-        users.value = data.data; // Salva gli utenti nello stato
+      if (Array.isArray(data.data)) {
+        forms.value = data.data;
       } else {
         alert("Dati mancanti o struttura non valida.");
       }
@@ -101,10 +105,10 @@ onMounted(() => {
                   Export
                 </span>
               </Button>
-              <Button size="sm" class="h-7 gap-1">
+              <Button size="sm" class="h-7 gap-1" @click="goToForm">
                 <PlusCircle class="h-3.5 w-3.5" />
                 <span class="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Product
+                  Create Form
                 </span>
               </Button>
             </div>
@@ -112,9 +116,9 @@ onMounted(() => {
           <TabsContent value="all">
             <Card>
               <CardHeader>
-                <CardTitle>Users</CardTitle>
+                <CardTitle>Created Forms</CardTitle>
                 <CardDescription>
-                  Manage your users and view their information.
+                  Manage your forms and view their information.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -122,11 +126,11 @@ onMounted(() => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Id</TableHead>
-                      <TableHead>Username</TableHead>
+                      <TableHead>Activity Name</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Comments</TableHead>
-                      <TableHead>Marketing Emails</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Num. Comments</TableHead>
+                      <TableHead>Allow Visibility</TableHead>
                       <TableHead>
                         <span class="sr-only">Actions</span>
                       </TableHead>
@@ -135,18 +139,18 @@ onMounted(() => {
 
                   <TableBody>
                     <!-- Itera sui dati degli utenti e popola la tabella -->
-                    <TableRow v-for="user in users" :key="user.id">
-                      <TableCell>{{ user.id }}</TableCell>
-                      <TableCell>{{ user.username }}</TableCell>
+                    <TableRow v-for="form in forms" :key="form.id">
+                      <TableCell>{{ form.id }}</TableCell>
+                      <TableCell>{{ form.activity_name }}</TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {{ user.status }}
+                          {{ form.status }}
                         </Badge>
                       </TableCell>
-                      <TableCell>{{ user.data }}</TableCell>
-                      <TableCell>{{ user.numero_commenti }}</TableCell>
+                      <TableCell>{{ form.date }}</TableCell>
+                      <TableCell>{{ form.n_comment }}</TableCell>
                       <TableCell>{{
-                        user.marketing_emails ? "Yes" : "No"
+                        form.visibility ? "Yes" : "No"
                       }}</TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -174,7 +178,7 @@ onMounted(() => {
               <CardFooter>
                 <div class="text-xs text-muted-foreground">
                   Showing <strong>1-10</strong> of
-                  <strong>{{ users.length }}</strong> users
+                  <strong>{{ forms.length }}</strong> forms
                 </div>
               </CardFooter>
             </Card>

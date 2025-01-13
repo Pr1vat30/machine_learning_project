@@ -171,9 +171,39 @@ class Utils:
 
         return dataset
 
+    @staticmethod
+    def remove_void_or_null(dataset_path):
+        """
+        Rimuove tutte le righe dal file CSV in cui uno dei valori è vuoto o uguale a null
+        e salva il file modificato in loco.
+
+        Args:
+            dataset_path (str): Il percorso al file CSV contenente il dataset (text, sentiment).
+        """
+        # Carica il dataset con pandas
+        df = pd.read_csv(dataset_path, header=None, names=["text", "sentiment"])
+
+        # Filtra le righe in cui 'text' o 'sentiment' sono vuoti o uguali a 'null' (case insensitive)
+        filtered_df = df[
+            df["text"].notnull() &
+            df["sentiment"].notnull() &
+            (df["text"].str.strip().str.lower() != "null") &
+            (df["sentiment"].str.strip().str.lower() != "null") &
+            (df["text"].str.strip().str.lower() != "") &
+            (df["sentiment"].str.strip().str.lower() != "")
+            ]
+
+        # Sovrascrive il file originale con i dati filtrati
+        filtered_df.to_csv(dataset_path, index=False, header=False)
+
 
 # ut = Utils()
-# dt = pd.read_csv("../../dataset/gold/def_merged_2.csv")
+
+# dt = pd.read_csv("../../dataset/gold/defmerge.csv")
+# dt2 = ut.undersample_class(dt, "positive", "sentiment", 50000)
+# dt2.to_csv("../../dataset/gold/defmerge_undersample.csv", index=False)
+
+# ut.remove_void_or_null("../../dataset/silver/tmp3.csv")
 
 # tt1 = ut.oversample_with_smote(dt, "negative")
 # tt1.to_csv("../../dataset/gold/def_merged_test.csv", index=False)

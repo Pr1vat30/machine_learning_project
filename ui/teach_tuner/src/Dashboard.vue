@@ -78,44 +78,44 @@ import { ref } from "vue";
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "admin",
+    email: "admin@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "TeachTuner Inc",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
     {
-      name: "Acme Corp.",
+      name: "TeachTuner Inc",
       logo: AudioWaveform,
       plan: "Startup",
     },
     {
-      name: "Evil Corp.",
+      name: "TeachTuner Inc",
       logo: Command,
       plan: "Free",
     },
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Sentiment",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "General",
           url: "#/dash",
         },
         {
-          title: "Starred",
+          title: "Creation",
           url: "#/form",
         },
         {
-          title: "Settings",
+          title: "Manage",
           url: "#/table",
         },
         {
@@ -144,7 +144,7 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Docs",
       url: "#",
       icon: BookOpen,
       items: [
@@ -176,35 +176,10 @@ const data = {
           url: "#",
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Config",
           url: "#",
         },
       ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
     },
   ],
 };
@@ -216,26 +191,33 @@ function setActiveTeam(team: (typeof data.teams)[number]) {
 }
 
 import { computed } from "vue";
-import Forms from "./Forms.vue";
-import Dash from "./Stats.vue";
+import Form from "./Form.vue";
+import Dash from "./General.vue";
 import Table from "./Table.vue";
-import TablePt2 from "./TablePt2.vue";
+import Stats from "./Stats.vue";
+import { useRouter } from "vue-router";
 
-const routes = {
-  "/form": Forms,
-  "/dash": Dash,
-  "/table": Table,
-  "/stats": TablePt2,
+const router = useRouter();
+
+const goToHome = () => {
+  router.push("/");
 };
 
-const currentPath = ref(window.location.hash);
+const routes = {
+  "/dash": Dash,
+  "/form": Form,
+  "/table": Table,
+  "/stats": Stats,
+};
+
+const currentPath = ref(window.location.hash || Object.keys(routes)[0]);
 
 window.addEventListener("hashchange", () => {
-  currentPath.value = window.location.hash;
+  currentPath.value = window.location.hash || Object.keys(routes)[0];
 });
 
 const currentView = computed(() => {
-  return routes[currentPath.value.slice(1)];
+  return routes[currentPath.value.slice(1)] || Object.values(routes)[0];
 });
 </script>
 
@@ -341,52 +323,6 @@ const currentView = computed(() => {
             </Collapsible>
           </SidebarMenu>
         </SidebarGroup>
-        <SidebarGroup class="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>Projects</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem v-for="item in data.projects" :key="item.name">
-              <SidebarMenuButton as-child>
-                <a :href="item.url">
-                  <component :is="item.icon" />
-                  <span>{{ item.name }}</span>
-                </a>
-              </SidebarMenuButton>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <SidebarMenuAction show-on-hover>
-                    <MoreHorizontal />
-                    <span class="sr-only">More</span>
-                  </SidebarMenuAction>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  class="w-48 rounded-lg"
-                  side="bottom"
-                  align="end"
-                >
-                  <DropdownMenuItem>
-                    <Folder class="text-muted-foreground" />
-                    <span>View Project</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Forward class="text-muted-foreground" />
-                    <span>Share Project</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Trash2 class="text-muted-foreground" />
-                    <span>Delete Project</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton class="text-sidebar-foreground/70">
-                <MoreHorizontal class="text-sidebar-foreground/70" />
-                <span>More</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
@@ -454,16 +390,12 @@ const currentView = computed(() => {
                     Account
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <CreditCard />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
                     <Bell />
                     Notifications
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem @click="goToHome">
                   <LogOut />
                   Log out
                 </DropdownMenuItem>
@@ -485,7 +417,7 @@ const currentView = computed(() => {
             <BreadcrumbList>
               <BreadcrumbItem class="hidden md:block">
                 <BreadcrumbLink href="#">
-                  Building Your Application
+                  Building Your Teaching Competence
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator class="hidden md:block" />

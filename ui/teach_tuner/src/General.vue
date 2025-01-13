@@ -20,10 +20,94 @@ import {
 import {
   Activity,
   ArrowUpRight,
-  CreditCard,
-  DollarSign,
-  Users,
+  MessageSquareHeart,
+  Star,
+  FileCheck2,
 } from "lucide-vue-next";
+import { onMounted, ref } from "vue";
+
+function getDominantSentiment(activities) {
+  // Inizializza un oggetto per contare i sentimenti globali
+  const sentimentCount = {
+    positive: 0,
+    negative: 0,
+    neutral: 0,
+  };
+
+  // Conta i sentimenti di tutti i commenti di tutte le attività
+  activities.forEach((activity) => {
+    if (activity.comments) {
+      for (const commentId in activity.comments) {
+        const sentiment = activity.comments[commentId].sentiment;
+        if (sentimentCount.hasOwnProperty(sentiment)) {
+          sentimentCount[sentiment]++;
+        }
+      }
+    }
+  });
+
+  const maxCount = Math.max(...Object.values(sentimentCount));
+
+  const dominantSentiments = Object.keys(sentimentCount).filter(
+    (sentiment) => sentimentCount[sentiment] === maxCount,
+  );
+
+  return dominantSentiments.length === 1
+    ? dominantSentiments[0].charAt(0).toUpperCase() +
+        dominantSentiments[0].slice(1)
+    : dominantSentiments.map(
+        (sentiment) => sentiment.charAt(0).toUpperCase() + sentiment.slice(1),
+      );
+}
+
+function calculateAverageComments(activities) {
+  // Calcola il numero totale di commenti
+  let totalComments = 0;
+
+  // Calcola il numero di attività
+  const totalActivities = activities.length;
+
+  // Somma i commenti per ogni attività
+  activities.forEach((activity) => {
+    totalComments += Object.keys(activity.comments).length;
+  });
+
+  // Calcola la media
+  const averageComments = totalComments / totalActivities;
+
+  return averageComments;
+}
+
+const forms = ref<any[]>([]);
+
+const enterCode = async () => {
+  try {
+    // Effettua una richiesta GET all'endpoint
+    const response = await fetch(`http://localhost:8080/get-data/`);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Dati ricevuti:", data.data);
+
+      // Verifica che i dati siano nel formato corretto e salvali
+      if (Array.isArray(data.data)) {
+        forms.value = data.data;
+      } else {
+        alert("Dati mancanti o struttura non valida.");
+      }
+    } else {
+      const errorData = await response.json();
+      alert(`Errore: ${errorData.detail || "Qualcosa è andato storto"}`);
+    }
+  } catch (error) {
+    console.error("Errore durante la richiesta:", error);
+    alert("Errore durante la richiesta. Controlla la connessione e riprova.");
+  }
+};
+
+onMounted(() => {
+  enterCode();
+});
 </script>
 
 <template>
@@ -34,48 +118,71 @@ import {
           <CardHeader
             class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
-            <CardTitle class="text-sm font-medium"> Total Revenue </CardTitle>
-            <DollarSign class="h-4 w-4 text-muted-foreground" />
+            <CardTitle class="text-sm font-medium"> Total Comment </CardTitle>
+            <Star class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">$45,231.89</div>
-            <p class="text-xs text-muted-foreground">+20.1% from last month</p>
+            <div v-if="forms.length > 0">
+              <div class="text-2xl font-bold">
+                +{{ forms[0].n_comment || 0 }}
+              </div>
+              <p class="text-xs text-muted-foreground">
+                Retrieved from all the comments to forms
+              </p>
+            </div>
+            <div v-else>
+              <div class="text-2xl font-bold">Missing data</div>
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader
             class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
-            <CardTitle class="text-sm font-medium"> Subscriptions </CardTitle>
-            <Users class="h-4 w-4 text-muted-foreground" />
+            <CardTitle class="text-sm font-medium"> Forms created </CardTitle>
+            <FileCheck2 class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">+2350</div>
-            <p class="text-xs text-muted-foreground">+180.1% from last month</p>
+            <div class="text-2xl font-bold">+{{ forms.length || 0 }}</div>
+            <p class="text-xs text-muted-foreground">
+              Retrieved from all the from created
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader
             class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
-            <CardTitle class="text-sm font-medium"> Sales </CardTitle>
-            <CreditCard class="h-4 w-4 text-muted-foreground" />
+            <CardTitle class="text-sm font-medium">
+              Overall sentiment
+            </CardTitle>
+            <MessageSquareHeart class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">+12,234</div>
-            <p class="text-xs text-muted-foreground">+19% from last month</p>
+            <div class="text-2xl font-bold">
+              {{ getDominantSentiment(forms) || "null" }}
+            </div>
+            <p class="text-xs text-muted-foreground">
+              Retrieved from all the comment received
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader
             class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
-            <CardTitle class="text-sm font-medium"> Active Now </CardTitle>
+            <CardTitle class="text-sm font-medium">
+              Average number of comment
+            </CardTitle>
             <Activity class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div class="text-2xl font-bold">+573</div>
-            <p class="text-xs text-muted-foreground">+201 since last hour</p>
+            <div class="text-2xl font-bold">
+              {{ calculateAverageComments(forms) || 0 }}
+            </div>
+            <p class="text-xs text-muted-foreground">
+              Average across all forms
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -83,10 +190,8 @@ import {
         <Card class="xl:col-span-2">
           <CardHeader class="flex flex-row items-center">
             <div class="grid gap-2">
-              <CardTitle>Transactions</CardTitle>
-              <CardDescription>
-                Recent transactions from your store.
-              </CardDescription>
+              <CardTitle>Comments</CardTitle>
+              <CardDescription> Recent comments</CardDescription>
             </div>
             <Button as-child size="sm" class="ml-auto gap-1">
               <a href="#">
@@ -204,8 +309,17 @@ import {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle>Recent Sales</CardTitle>
+          <CardHeader class="flex flex-row items-center">
+            <div class="grid gap-2">
+              <CardTitle>Forms</CardTitle>
+              <CardDescription> Recent forms</CardDescription>
+            </div>
+            <Button as-child size="sm" class="ml-auto gap-1">
+              <a href="#">
+                View All
+                <ArrowUpRight class="h-4 w-4" />
+              </a>
+            </Button>
           </CardHeader>
           <CardContent class="grid gap-8">
             <div class="flex items-center gap-4">

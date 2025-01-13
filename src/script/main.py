@@ -232,7 +232,7 @@ def lstm_predict_1(d_processing):
 
 def lstm_predict_loop():
 
-    predictor = LSTMPredictor(f"../model/lstm/lstm_model.keras")
+    predictor = LSTMPredictor("./src/model/lstm/lstm_model.keras")
 
     while True:
         new_text = input("Inserisci una frase (digita 'exit' per terminare): ")
@@ -280,7 +280,8 @@ def main():
 
     d_processing = Preprocessor()
     # d_processing.load_dataset("./src/dataset/bronze/data_augmented.csv")
-    d_processing.load_dataset("./src/dataset/gold/merged_processed_test.csv")
+    # d_processing.load_dataset("./src/dataset/gold/merged_processed_test.csv")
+    d_processing.load_dataset("./src/dataset/gold/merged_undersample_processed.csv")
 
     if args.mode == "training":
 

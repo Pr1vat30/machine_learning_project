@@ -13,7 +13,7 @@ const secondaryButtonVisible = ref(true);
 const codeInputVisible = ref(false);
 
 // Variabile per il testo del primo bottone
-const primaryButtonText = ref("Primary Button");
+const primaryButtonText = ref("Go to form");
 
 // Stato per gestire l'input del codice
 const codeInput = ref("");
@@ -27,13 +27,13 @@ const onPrimaryButtonClick = () => {
     // Nascondi il secondo bottone e mostra il campo di input
     secondaryButtonVisible.value = false;
     codeInputVisible.value = true;
-    primaryButtonText.value = "Submit"; // Cambia il testo del bottone
+    primaryButtonText.value = "Insert code"; // Cambia il testo del bottone
   }
 };
 
-// Funzione per navigare alla pagina "About"
-const goToHome = () => {
-  router.push("/home");
+// Funzione per navigare alla pagina "Dashboard"
+const goToDashboard = () => {
+  router.push("/dashboard");
 };
 
 const enterCode = async () => {
@@ -60,8 +60,8 @@ const enterCode = async () => {
           path: "/review",
           query: {
             id: user.id,
-            username: user.username,
-            bio: user.bio,
+            activity_name: user.activity_name,
+            description: user.description,
           },
         });
       } else {
@@ -79,58 +79,57 @@ const enterCode = async () => {
 </script>
 
 <template>
-  <section class="py-32">
+  <section class="py-24">
     <div class="container">
-      <div class="grid items-center gap-8 lg:grid-cols-2">
+      <div class="grid items-center gap-8 lg:grid-cols-3">
         <div
-          class="flex flex-col items-center text-center lg:items-start lg:text-left"
+          class="flex flex-col items-center text-center lg:col-span-2 lg:items-start lg:text-left"
         >
           <Badge variant="outline">
             New Release
             <ArrowDownRight class="ml-2 size-4" />
           </Badge>
           <h1 class="my-6 text-pretty text-4xl font-bold lg:text-6xl">
-            Welcome to Our Website
+            Welcome to TeachTuner
           </h1>
+          <p class="mb-4 max-w-xl text-muted-foreground lg:text-xl">
+            Discover how sentiment analysis revolutionizes education by
+            transforming student feedback into actionable insights.
+          </p>
           <p class="mb-8 max-w-xl text-muted-foreground lg:text-xl">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Elig
-            doloremque mollitia fugiat omnis! Porro facilis quo animi
-            consequatur. Explicabo.
+            Empower educators to improve teaching quality with data-driven
+            decisions, making learning experiences more effective!
           </p>
           <div
-            class="flex w-full flex-col justify-center items-center gap-2 sm:flex-row lg:justify-start"
+            class="flex max-w-xl w-full flex-col justify-center items-center gap-2 sm:flex-row lg:justify-start"
           >
-            <div
-              class="flex w-full flex-col justify-center items-center gap-2 sm:flex-row lg:justify-start"
+            <Button class="w-full sm:w-auto" @click="onPrimaryButtonClick">
+              {{ primaryButtonText }}
+            </Button>
+
+            <Button
+              v-if="secondaryButtonVisible"
+              variant="outline"
+              class="w-full sm:w-auto"
+              @click="goToDashboard"
             >
-              <Button class="w-full sm:w-auto" @click="onPrimaryButtonClick">
-                {{ primaryButtonText }}
-              </Button>
+              Go to dashboard
+              <ArrowDownRight class="ml-2 size-4" />
+            </Button>
 
-              <Button
-                v-if="secondaryButtonVisible"
-                variant="outline"
-                class="w-full sm:w-auto"
-                @click="goToHome"
-              >
-                Secondary Button
-                <ArrowDownRight class="ml-2 size-4" />
-              </Button>
-
-              <input
-                v-if="codeInputVisible"
-                type="text"
-                v-model="codeInput"
-                class="w-full sm:w-auto p-2 text-sm border border-gray-300 rounded-md focus:outline-none slide-in"
-                placeholder="Enter your code"
-              />
-            </div>
+            <input
+              v-if="codeInputVisible"
+              type="text"
+              v-model="codeInput"
+              class="w-full sm:w-auto p-2 text-sm border border-gray-300 rounded-md focus:outline-none slide-in"
+              placeholder="Enter your code"
+            />
           </div>
         </div>
         <img
-          src="https://shadcnblocks.com/images/block/placeholder-1.svg"
+          src="./assets/school_duck.png"
           alt="placeholder hero"
-          class="max-h-96 w-full rounded-md object-cover"
+          class="max-h-96 w-full rounded-md object-contain"
         />
       </div>
     </div>
@@ -141,10 +140,10 @@ const enterCode = async () => {
 /* Animazione slide-in da sinistra a destra a partire dalla fine del primo pulsante */
 @keyframes slideIn {
   0% {
-    transform: translateX(150%); /* Inizia fuori dalla vista, a destra */
+    transform: translateX(150%);
   }
   100% {
-    transform: translateX(0); /* Posizione finale visibile */
+    transform: translateX(0);
   }
 }
 

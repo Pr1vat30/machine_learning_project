@@ -1,7 +1,5 @@
 import pandas as pd
 
-import pandas as pd
-
 def merge_csv_files(file1: str, file2: str, output_file: str) -> pd.DataFrame:
     """
     Merges two CSV files into one, converts 'LABEL_X' sentiment values to corresponding textual labels
@@ -49,3 +47,7 @@ def merge_csv_files(file1: str, file2: str, output_file: str) -> pd.DataFrame:
     except Exception as e:
         print(f"An error occurred: {e}")
         exit(1)
+
+
+
+
