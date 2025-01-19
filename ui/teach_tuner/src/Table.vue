@@ -32,7 +32,7 @@ import { File, ListFilter, MoreHorizontal, PlusCircle } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 
 function goToForm() {
-  window.location.href = `http://localhost:5173/dashboard#/form`;
+  window.location.href = __API_SERVER__ + `/dashboard#/form`;
 }
 
 // Crea uno stato per i dati da visualizzare nella tabella
@@ -41,7 +41,7 @@ const forms = ref<any[]>([]);
 const enterCode = async () => {
   try {
     // Effettua una richiesta GET all'endpoint
-    const response = await fetch(`http://localhost:8080/get-data/`);
+    const response = await fetch(__API_SERVER__ + "/api/get-data/");
 
     if (response.ok) {
       const data = await response.json();

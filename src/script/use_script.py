@@ -1,7 +1,6 @@
 import os
 from src.data.data_processing.processing import Preprocessor
 from src.script.testing.logistic_reg_test import LogisticRegressionPredictor
-from src.script.testing.naive_bayes_test import NaiveBayesPredictor
 from src.script.train.logistic_reg_train import LogisticRegressionTrainer
 
 class UseScript:
@@ -28,7 +27,7 @@ class UseScript:
         """
         Carica il modello dal percorso specificato.
         """
-        self.predictor = NaiveBayesPredictor(embedding_type="tfidf")
+        self.predictor = LogisticRegressionPredictor(embedding_type="tfidf")
         self.predictor.load_model(path)
 
     def use_model(self, text):

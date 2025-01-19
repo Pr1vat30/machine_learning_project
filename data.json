@@ -1,262 +1,202 @@
 [
     {
-        "id": "442778",
-        "activity_name": "es",
-        "description": "gghfgfhfhgfhf",
+        "id": "442779",
+        "activity_name": "Workshop su Python Basics",
+        "description": "Condividi i tuoi commenti sull'evento.",
         "visibility": true,
         "status": "Active",
-        "date": "2025-01-13 08:45:31",
-        "n_comment": "50",
+        "date": "2025-01-12 10:00:00",
+        "n_comment": "3",
         "comments": {
             "1": {
-                "comment": "Sample comment 1",
-                "sentiment": "neutral",
-                "date": "2025-01-18"
+                "comment": "Interessante e ben organizzato.",
+                "sentiment": "positive",
+                "date": "2025-01-13"
             },
             "2": {
-                "comment": "Sample comment 2",
-                "sentiment": "negative",
-                "date": "2025-01-17"
+                "comment": "Un po' troppo veloce in alcuni punti.",
+                "sentiment": "neutral",
+                "date": "2025-01-13"
             },
             "3": {
-                "comment": "Sample comment 3",
-                "sentiment": "positive",
-                "date": "2025-01-17"
-            },
-            "4": {
-                "comment": "Sample comment 4",
-                "sentiment": "positive",
-                "date": "2025-01-15"
-            },
-            "5": {
-                "comment": "Sample comment 5",
-                "sentiment": "neutral",
-                "date": "2025-01-14"
-            },
-            "6": {
-                "comment": "Sample comment 6",
-                "sentiment": "positive",
-                "date": "2025-01-04"
-            },
-            "7": {
-                "comment": "Sample comment 7",
-                "sentiment": "positive",
-                "date": "2025-01-09"
-            },
-            "8": {
-                "comment": "Sample comment 8",
-                "sentiment": "negative",
-                "date": "2025-01-02"
-            },
-            "9": {
-                "comment": "Sample comment 9",
-                "sentiment": "negative",
-                "date": "2025-01-05"
-            },
-            "10": {
-                "comment": "Sample comment 10",
-                "sentiment": "negative",
-                "date": "2025-01-09"
-            },
-            "11": {
-                "comment": "Sample comment 11",
-                "sentiment": "neutral",
-                "date": "2025-01-01"
-            },
-            "12": {
-                "comment": "Sample comment 12",
-                "sentiment": "neutral",
-                "date": "2025-01-13"
-            },
-            "13": {
-                "comment": "Sample comment 13",
-                "sentiment": "negative",
-                "date": "2025-01-03"
-            },
-            "14": {
-                "comment": "Sample comment 14",
-                "sentiment": "positive",
-                "date": "2025-01-01"
-            },
-            "15": {
-                "comment": "Sample comment 15",
-                "sentiment": "positive",
-                "date": "2025-01-09"
-            },
-            "16": {
-                "comment": "Sample comment 16",
-                "sentiment": "negative",
-                "date": "2025-01-03"
-            },
-            "17": {
-                "comment": "Sample comment 17",
+                "comment": "This is too bad for a class",
                 "sentiment": "negative",
                 "date": "2025-01-14"
-            },
-            "18": {
-                "comment": "Sample comment 18",
-                "sentiment": "negative",
-                "date": "2025-01-15"
-            },
-            "19": {
-                "comment": "Sample comment 19",
-                "sentiment": "neutral",
-                "date": "2025-01-08"
-            },
-            "20": {
-                "comment": "Sample comment 20",
-                "sentiment": "negative",
-                "date": "2025-01-04"
-            },
-            "21": {
-                "comment": "Sample comment 21",
-                "sentiment": "neutral",
-                "date": "2025-01-18"
-            },
-            "22": {
-                "comment": "Sample comment 22",
-                "sentiment": "negative",
-                "date": "2025-01-08"
-            },
-            "23": {
-                "comment": "Sample comment 23",
-                "sentiment": "negative",
-                "date": "2025-01-18"
-            },
-            "24": {
-                "comment": "Sample comment 24",
-                "sentiment": "positive",
-                "date": "2025-01-21"
-            },
-            "25": {
-                "comment": "Sample comment 25",
-                "sentiment": "positive",
-                "date": "2025-01-03"
-            },
-            "26": {
-                "comment": "Sample comment 26",
-                "sentiment": "neutral",
-                "date": "2025-01-01"
-            },
-            "27": {
-                "comment": "Sample comment 27",
-                "sentiment": "neutral",
-                "date": "2025-01-21"
-            },
-            "28": {
-                "comment": "Sample comment 28",
+            }
+        }
+    },
+    {
+        "id": "442780",
+        "activity_name": "Lezione su Machine Learning",
+        "description": "Esprimi le tue impressioni sui contenuti trattati.",
+        "visibility": false,
+        "status": "Completed",
+        "date": "2025-01-11 15:30:00",
+        "n_comment": "2",
+        "comments": {
+            "1": {
+                "comment": "Molto approfondita e utile!",
                 "sentiment": "positive",
                 "date": "2025-01-12"
             },
-            "29": {
-                "comment": "Sample comment 29",
+            "2": {
+                "comment": "Poca interazione con i partecipanti.",
                 "sentiment": "negative",
+                "date": "2025-01-12"
+            }
+        }
+    },
+    {
+        "id": "442781",
+        "activity_name": "Seminario su Data Science",
+        "description": "Valuta la qualit\u00e0 del materiale fornito.",
+        "visibility": true,
+        "status": "Active",
+        "date": "2025-01-10 09:00:00",
+        "n_comment": "2",
+        "comments": {
+            "1": {
+                "comment": "Materiali eccellenti e molto chiari.",
+                "sentiment": "positive",
+                "date": "2025-01-11"
+            },
+            "2": {
+                "comment": "Alcuni esempi non erano chiari.",
+                "sentiment": "neutral",
+                "date": "2025-01-11"
+            }
+        }
+    },
+    {
+        "id": "442782",
+        "activity_name": "Laboratorio di R Programming",
+        "description": "Fornisci suggerimenti per migliorare la sessione.",
+        "visibility": true,
+        "status": "Pending",
+        "date": "2025-01-14 14:00:00",
+        "n_comment": "2",
+        "comments": {
+            "1": {
+                "comment": "Pi\u00f9 esempi pratici sarebbero utili.",
+                "sentiment": "neutral",
+                "date": "2025-01-14"
+            }
+        }
+    },
+    {
+        "id": "442783",
+        "activity_name": "Conferenza su AI Ethics",
+        "description": "Commenta l'approccio etico discusso.",
+        "visibility": true,
+        "status": "Active",
+        "date": "2025-01-09 11:00:00",
+        "n_comment": "1",
+        "comments": {
+            "1": {
+                "comment": "Spunti di riflessione molto interessanti.",
+                "sentiment": "positive",
                 "date": "2025-01-10"
-            },
-            "30": {
-                "comment": "Sample comment 30",
+            }
+        }
+    },
+    {
+        "id": "442784",
+        "activity_name": "Discussione sui Neural Networks",
+        "description": "Condividi la tua opinione sui concetti appresi.",
+        "visibility": false,
+        "status": "Completed",
+        "date": "2025-01-08 13:00:00",
+        "n_comment": "1",
+        "comments": {
+            "1": {
+                "comment": "Argomenti complessi, ma ben spiegati.",
                 "sentiment": "positive",
-                "date": "2025-01-11"
-            },
-            "31": {
-                "comment": "Sample comment 31",
+                "date": "2025-01-09"
+            }
+        }
+    },
+    {
+        "id": "442785",
+        "activity_name": "Tutorial su Git e GitHub",
+        "description": "Fornisci un feedback sul tutorial.",
+        "visibility": true,
+        "status": "Active",
+        "date": "2025-01-07 16:30:00",
+        "n_comment": "1",
+        "comments": {
+            "1": {
+                "comment": "Utile per i principianti.",
                 "sentiment": "positive",
-                "date": "2025-01-11"
-            },
-            "32": {
-                "comment": "Sample comment 32",
+                "date": "2025-01-08"
+            }
+        }
+    },
+    {
+        "id": "442786",
+        "activity_name": "Lezione su Deep Learning",
+        "description": "Racconta la tua esperienza con questa lezione.",
+        "visibility": true,
+        "status": "Pending",
+        "date": "2025-01-06 18:00:00",
+        "n_comment": "1",
+        "comments": {
+            "1": {
+                "comment": "Ottima introduzione ai concetti base.",
                 "sentiment": "positive",
-                "date": "2025-01-12"
-            },
-            "33": {
-                "comment": "Sample comment 33",
-                "sentiment": "positive",
-                "date": "2025-01-13"
-            },
-            "34": {
-                "comment": "Sample comment 34",
-                "sentiment": "positive",
+                "date": "2025-01-07"
+            }
+        }
+    },
+    {
+        "id": "442787",
+        "activity_name": "Webinar su Big Data",
+        "description": "Valuta il livello di approfondimento del webinar.",
+        "visibility": true,
+        "status": "Active",
+        "date": "2025-01-05 10:00:00",
+        "n_comment": "1",
+        "comments": {
+            "1": {
+                "comment": "Argomenti un po' troppo tecnici.",
+                "sentiment": "neutral",
                 "date": "2025-01-06"
-            },
-            "35": {
-                "comment": "Sample comment 35",
-                "sentiment": "positive",
-                "date": "2025-01-17"
-            },
-            "36": {
-                "comment": "Sample comment 36",
+            }
+        }
+    },
+    {
+        "id": "442788",
+        "activity_name": "Progetto pratico su Computer Vision",
+        "description": "Condividi il tuo progresso e difficolt\u00e0.",
+        "visibility": true,
+        "status": "Pending",
+        "date": "2025-01-04 14:00:00",
+        "n_comment": "1",
+        "comments": {
+            "1": {
+                "comment": "Sfida interessante, ma complessa.",
                 "sentiment": "neutral",
-                "date": "2025-01-15"
-            },
-            "37": {
-                "comment": "Sample comment 37",
-                "sentiment": "neutral",
-                "date": "2025-01-02"
-            },
-            "38": {
-                "comment": "Sample comment 38",
-                "sentiment": "neutral",
-                "date": "2025-01-21"
-            },
-            "39": {
-                "comment": "Sample comment 39",
-                "sentiment": "neutral",
-                "date": "2025-01-20"
-            },
-            "40": {
-                "comment": "Sample comment 40",
-                "sentiment": "negative",
-                "date": "2025-01-10"
-            },
-            "41": {
-                "comment": "Sample comment 41",
-                "sentiment": "positive",
-                "date": "2025-01-14"
-            },
-            "42": {
-                "comment": "Sample comment 42",
-                "sentiment": "neutral",
-                "date": "2025-01-20"
-            },
-            "43": {
-                "comment": "Sample comment 43",
-                "sentiment": "positive",
-                "date": "2025-01-01"
-            },
-            "44": {
-                "comment": "Sample comment 44",
-                "sentiment": "negative",
-                "date": "2025-01-08"
-            },
-            "45": {
-                "comment": "Sample comment 45",
-                "sentiment": "neutral",
-                "date": "2025-01-18"
-            },
-            "46": {
-                "comment": "Sample comment 46",
-                "sentiment": "negative",
-                "date": "2025-01-10"
-            },
-            "47": {
-                "comment": "Sample comment 47",
-                "sentiment": "negative",
-                "date": "2025-01-01"
-            },
-            "48": {
-                "comment": "Sample comment 48",
-                "sentiment": "neutral",
-                "date": "2025-01-14"
-            },
-            "49": {
-                "comment": "Sample comment 49",
-                "sentiment": "positive",
-                "date": "2025-01-08"
-            },
-            "50": {
-                "comment": "Sample comment 50",
-                "sentiment": "positive",
                 "date": "2025-01-05"
+            }
+        }
+    },
+    {
+        "id": "398517",
+        "activity_name": "Fia",
+        "description": "Prova post test",
+        "visibility": true,
+        "status": "Active",
+        "date": "2025-01-14 12:00:50",
+        "n_comment": "2",
+        "comments": {
+            "1": {
+                "comment": "The request wast not as exepeted",
+                "sentiment": "negative",
+                "date": "2025-01-14"
+            },
+            "2": {
+                "comment": "The request wast not made",
+                "sentiment": "negative",
+                "date": "2025-01-14"
             }
         }
     }

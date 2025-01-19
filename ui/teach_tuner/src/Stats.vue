@@ -184,7 +184,7 @@ const enterCode = async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:8080/get-data/${id}`);
+    const response = await fetch(__API_SERVER__ + "/api/get-data/${id}");
 
     if (response.ok) {
       const data = await response.json();

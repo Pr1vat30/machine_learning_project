@@ -50,7 +50,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     console.log(JSON.stringify(values));
 
-    const response = await fetch("http://localhost:8080/add_comment", {
+    const response = await fetch(__API_SERVER__ + "/api/add_comment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,4 +1,7 @@
 from datetime import datetime
+
+from starlette.staticfiles import StaticFiles
+
 from src.script.use_script import UseScript
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -10,12 +13,6 @@ DATA_FILE = "data.json"
 use = UseScript("./api/model/deployed_model.pkl")
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 class InputData(BaseModel):
     activity_name: str
@@ -33,7 +30,8 @@ def generate_unique_id(existing_ids):
         if new_id not in existing_ids:
             return new_id
 
-@app.post("/save-data/")
+
+@app.post("/api/save-data/")
 async def save_data(data: InputData):
     # Legge il contenuto esistente del file JSON (se presente)
     if os.path.exists(DATA_FILE):
@@ -72,7 +70,7 @@ async def save_data(data: InputData):
 
     return {"message": "Data saved successfully", "id": unique_id}
 
-@app.get("/get-data/")
+@app.get("/api/get-data/")
 async def get_data():
     # Controlla se il file JSON esiste
     if not os.path.exists(DATA_FILE):
@@ -88,7 +86,7 @@ async def get_data():
     # Restituisce tutti i dati
     return {"message": "Data retrieved successfully", "data": data}
 
-@app.get("/get-data/{item_id}")
+@app.get("/api/get-data/{item_id}")
 async def get_data(item_id: int):
     # Controlla se il file JSON esiste
     if not os.path.exists(DATA_FILE):
@@ -109,7 +107,7 @@ async def get_data(item_id: int):
     # Se l'ID non è trovato, solleva un errore
     raise HTTPException(status_code=404, detail="Item not found")
 
-@app.post("/add_comment/")
+@app.post("/api/add_comment/")
 async def add_comment(request: CommentRequest):
     # Carica i dati esistenti dal file
     try:
@@ -146,5 +144,11 @@ async def add_comment(request: CommentRequest):
     return {"message": "Commento aggiunto con successo!"}
 
 
+app.mount("/", StaticFiles(directory="ui/teach_tuner/dist", html=True), name="static")
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

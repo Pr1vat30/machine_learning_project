@@ -46,7 +46,7 @@ const onSubmit = handleSubmit(async (values) => {
     console.log(JSON.stringify(values));
 
     // Effettua la richiesta POST all'endpoint FastAPI con fetch
-    const response = await fetch("http://localhost:8080/save-data/", {
+    const response = await fetch(__API_SERVER__ + "/api/save-data/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

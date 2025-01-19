@@ -198,10 +198,13 @@ class Utils:
 
 
 # ut = Utils()
+# dt = pd.read_csv("../../dataset/gold/es2/defmerge_undersample.csv")
+# newdt = ut.map_sentiment_labels(dt, "sentiment")
+# newdt.to_csv("../../dataset/silver/rtt.csv", index=False)
 
-# dt = pd.read_csv("../../dataset/gold/defmerge.csv")
-# dt2 = ut.undersample_class(dt, "positive", "sentiment", 50000)
-# dt2.to_csv("../../dataset/gold/defmerge_undersample.csv", index=False)
+# dt = pd.read_csv("../../dataset/gold/es2/defmerge_undersample.csv")
+# dt2 = ut.undersample_class(dt, "positive", "sentiment", 35000)
+# dt2.to_csv("../../dataset/gold/defmerge_undersample2.csv", index=False)
 
 # ut.remove_void_or_null("../../dataset/silver/tmp3.csv")
 

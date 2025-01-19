@@ -78,12 +78,27 @@ function calculateAverageComments(activities) {
   return averageComments;
 }
 
+function calculateNumComments(activities) {
+  // Calcola il numero totale di commenti
+  let totalComments = 0;
+
+  // Calcola il numero di attività
+  const totalActivities = activities.length;
+
+  // Somma i commenti per ogni attività
+  activities.forEach((activity) => {
+    totalComments += Object.keys(activity.comments).length;
+  });
+
+  return totalComments;
+}
+
 const forms = ref<any[]>([]);
 
 const enterCode = async () => {
   try {
     // Effettua una richiesta GET all'endpoint
-    const response = await fetch(`http://localhost:8080/get-data/`);
+    const response = await fetch(__API_SERVER__ + "/api/get-data/");
 
     if (response.ok) {
       const data = await response.json();
@@ -124,7 +139,7 @@ onMounted(() => {
           <CardContent>
             <div v-if="forms.length > 0">
               <div class="text-2xl font-bold">
-                +{{ forms[0].n_comment || 0 }}
+                +{{ calculateNumComments(forms) || 0 }}
               </div>
               <p class="text-xs text-muted-foreground">
                 Retrieved from all the comments to forms
@@ -178,7 +193,7 @@ onMounted(() => {
           </CardHeader>
           <CardContent>
             <div class="text-2xl font-bold">
-              {{ calculateAverageComments(forms) || 0 }}
+              {{ calculateAverageComments(forms).toFixed(2) || 0 }}
             </div>
             <p class="text-xs text-muted-foreground">
               Average across all forms
