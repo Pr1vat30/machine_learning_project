@@ -41,7 +41,27 @@ class OllamaService:
             # Create the payload for the model
             data = {
                 "model": self.model,
-                "prompt": f"Adjust this sentence to improve clarity. Respond only with the new sentence : {text}",
+                "prompt": (
+                    f"""
+                    
+                    Transform the given sentence into its negative version. Here are examples:
+                    
+                    Example 1:
+                    Input: I love sunny days.
+                    Output: I don’t love sunny days.
+                    
+                    Example 2:
+                    Input: She is happy with her results.
+                    Output: She is not happy with her results.
+                    
+                    Example 3:
+                    Input: We can achieve this goal.
+                    Output: We cannot achieve this goal. 
+                    
+                    Now, transform the following sentence into its negative form: {text}. The response must be ONLY the new sentence without any comment.
+                    
+                    """
+                ),
             }
 
             # Make the request to the Ollama server with streaming support
@@ -199,41 +219,68 @@ class OllamaService:
 
         # Infinite loop for generating sentences
         while not self.stop_generation:
+
             prompts = [
-                f"Create a {self.sentiment} comment about a lesson. Respond ONLY with the new sentence and max {random.randint(5, 15)} words.",
-                f"Write a critical review of a lesson. Keep it {self.sentiment} and within {random.randint(5, 15)} words.",
-                f"Give a short {self.sentiment} comment about a lesson, focusing on what could be improved. Max {random.randint(5, 15)} words.",
-                f"Write a {self.sentiment} feedback on a lesson, mentioning its weaknesses. Limit your response to {random.randint(5, 15)} words.",
-                f"Provide a short and critical comment on a lesson. Respond in no more than {random.randint(5, 15)} words.",
-                f"Create a brief {self.sentiment} review of a lesson, highlighting flaws. Keep it under {random.randint(5, 15)} words.",
-                f"Write a sentence of {self.sentiment} feedback about a lesson. Limit your answer to a maximum of {random.randint(5, 15)} words.",
-                f"Generate a short critical comment about a lesson, focusing on its {self.sentiment} aspects. Max {random.randint(5, 15)} words.",
-                f"Write a short but {self.sentiment} critique of a lesson. Keep it under {random.randint(5, 15)} words.",
-                f"Create a {self.sentiment} and concise feedback on a lesson. Maximum of {random.randint(5, 15)} words.",
+                f"Write a {self.sentiment} comment on a lesson, focusing on key aspects to consider.",
+                f"Provide a {self.sentiment} review of a lesson, offering suggestions for improvement.",
+                f"Write a short {self.sentiment} reflection on a group project, highlighting strengths and weaknesses.",
+                f"Generate a {self.sentiment} evaluation of a teaching method, considering its potential impact.",
+                f"Offer a {self.sentiment} critique of a classroom activity, exploring possible enhancements.",
+                f"Write a brief {self.sentiment} assessment of an educational tool, focusing on its advantages and limitations.",
+                f"Provide a {self.sentiment} comment on how a teacher presents complex topics.",
+                f"Write a {self.sentiment} review of an online learning platform, evaluating its overall effectiveness.",
+                f"Give a {self.sentiment} opinion on a student’s work during a presentation.",
+                f"Write {self.sentiment} feedback on an assignment, addressing areas for growth.",
 
-                f"Write a {self.sentiment} comment about a teaching method. Respond ONLY with the new sentence and max {random.randint(5, 15)} words.",
-                f"Provide a critical review of an educational tool. Keep it {self.sentiment} and within {random.randint(5, 15)} words.",
-                f"Give a brief {self.sentiment} comment on an educational video. Limit your response to {random.randint(5, 15)} words.",
-                f"Create a {self.sentiment} review about a classroom activity. Respond in no more than {random.randint(5, 15)} words.",
-                f"Write a {self.sentiment} feedback on a student project. Keep your response within {random.randint(5, 15)} words.",
-                f"Create a short, critical comment on a teacher’s explanation. Max {random.randint(5, 15)} words.",
-                f"Write a {self.sentiment} critique of an online learning platform. Respond in no more than {random.randint(5, 15)} words.",
-                f"Provide a brief {self.sentiment} review of a homework assignment. Limit your response to {random.randint(5, 15)} words.",
-                f"Give a short {self.sentiment} comment on a group discussion. Max {random.randint(5, 15)} words.",
-                f"Write a critical feedback about an educational experience. Keep it concise and under {random.randint(5, 15)} words.",
+                f"Create a {self.sentiment} evaluation of a student project, suggesting areas for development.",
+                f"Write a {self.sentiment} critique of a lesson, examining aspects that could be improved.",
+                f"Offer a {self.sentiment} review of a lesson’s content, proposing ways to increase engagement.",
+                f"Write {self.sentiment} feedback on a teaching method, pointing out what works well and what doesn’t.",
+                f"Provide a {self.sentiment} critique of a teaching approach, highlighting areas that could be refined.",
+                f"Write a {self.sentiment} comment about a group discussion, focusing on participation and interaction.",
+                f"Generate a {self.sentiment} reflection on a teacher’s classroom management techniques.",
+                f"Offer a {self.sentiment} evaluation of a group project, considering both successes and challenges.",
+                f"Write a {self.sentiment} review of a classroom tool, discussing how it could be optimized.",
+                f"Provide a {self.sentiment} comment on a class debate, evaluating the effectiveness of the discussion.",
 
-                f"Create a {self.sentiment} comment about an e-learning course. Respond ONLY with the new sentence and max {random.randint(5, 15)} words.",
-                f"Write a critical review of a book used for learning. Limit it to {random.randint(5, 15)} words.",
-                f"Provide a {self.sentiment} feedback on a tutor’s performance. Respond concisely in {random.randint(5, 15)} words or less.",
-                f"Generate a {self.sentiment} comment of a lesson plan. Respond within a maximum of {random.randint(5, 15)} words.",
-                f"Write a short {self.sentiment} review of an educational app. Limit your answer to {random.randint(5, 15)} words.",
-                f"Give a {self.sentiment} comment on an educational game or activity. Keep it to a maximum of {random.randint(5, 15)} words.",
-                f"Write a short {self.sentiment} reflection on a class discussion. Max {random.randint(5, 15)} words.",
-                f"Create a {self.sentiment} comment of a training session. Respond within {random.randint(5, 15)} words.",
-                f"Write a {self.sentiment} comment about a collaborative project. Keep it under {random.randint(5, 15)} words.",
-                f"Give a brief {self.sentiment} feedback on an educational seminar. Limit your response to {random.randint(5, 15)} words."
+                f"Write a {self.sentiment} analysis of a lesson, incorporating a broad vocabulary to reflect its various aspects.",
+                f"Provide a {self.sentiment} assessment of a lesson, utilizing diverse terminology to discuss its strengths and areas for improvement.",
+                f"Offer a {self.sentiment} critique of a group project, using a wide range of descriptive words to highlight both successes and challenges.",
+                f"Write a {self.sentiment} review of a teaching method, ensuring the use of precise and varied language to describe its impact.",
+                f"Generate a {self.sentiment} evaluation of a classroom activity, employing an extensive lexicon to explore its effectiveness.",
+                f"Write a {self.sentiment} reflection on an educational tool, using rich and varied language to discuss its advantages and limitations.",
+                f"Provide a {self.sentiment} critique of a teacher’s explanation, incorporating diverse vocabulary to express both clarity and areas for improvement.",
+                f"Write a {self.sentiment} review of an online learning platform, choosing varied and detailed language to assess its strengths.",
+                f"Give a {self.sentiment} comment on a student’s presentation, utilizing a rich vocabulary to evaluate both delivery and content.",
+
+                f"Write {self.sentiment} feedback on an assignment, demonstrating a broad vocabulary to suggest areas for improvement.",
+                f"Create a {self.sentiment} evaluation of a student project, employing diverse terminology to describe both strong points and areas for growth.",
+                f"Write a {self.sentiment} critique of a lesson, integrating varied and elevated language to explore how the lesson can be enhanced.",
+                f"Offer a {self.sentiment} review of a lesson’s structure, utilizing sophisticated language to suggest improvements in pacing and flow.",
+                f"Write {self.sentiment} feedback on a teaching technique, using varied and precise vocabulary to highlight both its strengths and weaknesses.",
+                f"Provide a {self.sentiment} analysis of a teaching method, ensuring the use of a broad and advanced lexicon to describe its impact.",
+                f"Write a {self.sentiment} comment on a group discussion, using an array of expressive language to analyze participation levels.",
+                f"Generate a {self.sentiment} reflection on a teacher’s classroom management, employing diverse and nuanced vocabulary to evaluate effectiveness.",
+                f"Offer a {self.sentiment} critique of a group project, using varied and refined language to evaluate the project’s overall success.",
+                f"Write a {self.sentiment} review of a classroom tool, selecting precise and varied language to evaluate its practicality.",
+                f"Provide a {self.sentiment} comment on a class debate, incorporating rich and varied vocabulary to assess the quality of the discussion."
             ]
-            adjusted_sentence = self.generate_text_with_ollama(random.choice(prompts))
+
+            prompt = f"""
+                    Here are some example reviews of lessons. Please note the format is a single, short sentence:
+
+                    Example for Neutral: The lesson was okay, but I would have liked more interaction.
+                    Example for Positive: The lesson was clear and concise, I understood everything well.
+                    Example for Negative: I had a hard time understanding the main points of the lesson.
+
+                    Now, please generate a review based on the following instructions:
+                    
+                    {random.choice(prompts)}
+                    
+                    Respond ONLY with the new sentence and MAX {random.randint(5, 20)} words. The output must be a single sentence and should not include any extra information like explanations.
+                    """
+
+            adjusted_sentence = self.generate_text_with_ollama(prompt)
 
             # Save the generated sentence to the DataFrame
             df_output = pd.concat(
