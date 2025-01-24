@@ -279,9 +279,7 @@ def main():
     args = parser.parse_args()
 
     d_processing = Preprocessor()
-    # d_processing.load_dataset("./src/dataset/bronze/data_augmented.csv")
-    # d_processing.load_dataset("./src/dataset/gold/merged_processed_test.csv")
-    d_processing.load_dataset("./src/dataset/gold/merged_undersample_processed.csv")
+    d_processing.load_dataset("./src/dataset/gold/final_processed.csv")
 
     if args.mode == "training":
 

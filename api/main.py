@@ -7,3 +7,6 @@ class Predict:
 
     def predict(self, text):
         self.use.use_model(text)
+
+
+

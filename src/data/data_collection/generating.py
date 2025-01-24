@@ -58,7 +58,7 @@ class OllamaService:
                     Input: We can achieve this goal.
                     Output: We cannot achieve this goal. 
                     
-                    Now, transform the following sentence into its negative form: {text}. The response must be ONLY the new sentence without any comment.
+                    Now, transform the following sentence into its {self.sentiment} form: {text}. The response must be contain ONLY the new sentence without any comment.
                     
                     """
                 ),

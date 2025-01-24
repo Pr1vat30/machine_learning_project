@@ -1,9 +1,10 @@
 import random
 import pandas as pd
+from tqdm import tqdm
+from langdetect import detect
 from collections import Counter
-
 from imblearn.over_sampling import SMOTE
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer
 
 
 class Utils:
@@ -104,14 +105,16 @@ class Utils:
             return data
 
     @staticmethod
-    def oversample_with_smote(df, sentiment, text_col='text', sentiment_col='sentiment'):
+    def oversample_with_smote(df, sentiment, text_col='text', sentiment_col='sentiment', model_name="bert-base-uncased"):
         """
-        Applica SMOTE per fare oversampling delle classi 'negative' e 'neutral' in un dataframe di sentiment analysis.
+        Applica SMOTE per fare oversampling delle classi in un dataframe di sentiment analysis,
+        utilizzando BERT uncased (con SentenceTransformer) per rappresentare il testo.
 
         :param df: pandas DataFrame contenente i dati
+        :param sentiment: classe di sentiment da bilanciare
         :param text_col: Nome della colonna contenente il testo
         :param sentiment_col: Nome della colonna contenente il sentiment (target)
-        :param random_state: Random state per la riproducibilità
+        :param model_name: Nome del modello pre-addestrato BERT
         :return: DataFrame bilanciato
         """
         # Sostituisci valori mancanti nella colonna testo con una stringa vuota
@@ -121,9 +124,14 @@ class Utils:
         X = df[text_col]
         y = df[sentiment_col]
 
-        # Converti il testo in rappresentazioni numeriche usando TF-IDF
-        tfidf = TfidfVectorizer()
-        X_tfidf = tfidf.fit_transform(X)
+        # Carica il modello SentenceTransformer
+        model = SentenceTransformer(model_name)
+
+        # Aggiungi la barra di progresso con tqdm
+        tqdm.pandas(desc="Generazione embeddings BERT")
+
+        # Calcola gli embeddings BERT per tutto il dataset, con barra di progresso
+        X_bert = X.progress_apply(lambda x: model.encode(x))
 
         # Determina il numero massimo di campioni (classe di maggioranza)
         max_class_count = y.value_counts().max()
@@ -131,14 +139,13 @@ class Utils:
         # Configura la strategia per portare ogni classe al massimo livello
         sampling_strategy = {f"{sentiment}": max_class_count}
 
-        # Applica SMOTE
+        # Applica SMOTE sugli embeddings
         smote = SMOTE(sampling_strategy=sampling_strategy, random_state=42)
-        X_resampled, y_resampled = smote.fit_resample(X_tfidf, y)
+        X_resampled, y_resampled = smote.fit_resample(X_bert.tolist(), y)
 
         # Converti i dati oversamplati in un nuovo dataframe
-        resampled_text = tfidf.inverse_transform(X_resampled)
         resampled_df = pd.DataFrame({
-            text_col: [' '.join(tokens) for tokens in resampled_text],
+            text_col: X_resampled,  # Gli embeddings come lista di vettori
             sentiment_col: y_resampled
         })
 
@@ -196,20 +203,150 @@ class Utils:
         # Sovrascrive il file originale con i dati filtrati
         filtered_df.to_csv(dataset_path, index=False, header=False)
 
+    @staticmethod
+    def rating_to_sentiment(input_file, output_file):
+        # Carica il file CSV
+        df = pd.read_csv(input_file)
 
-# ut = Utils()
-# dt = pd.read_csv("../../dataset/gold/es2/defmerge_undersample.csv")
+        # Elimina le righe con valori nulli
+        df.dropna(subset=['reviews', 'rating'], inplace=True)
+
+        # Crea la colonna 'text' che contiene il testo della recensione
+        df['text'] = df['reviews']
+
+        # Crea la colonna 'sentiment' mappando il rating
+        def map_sentiment(rating):
+            if 1 <= rating < 2.5:
+                return 'negative'
+            elif 2.5 <= rating < 3.5:
+                return 'neutral'
+            elif 3.5 <= rating <= 5:
+                return 'positive'
+            return None  # In caso di rating fuori da 1-5 (se ci sono valori strani)
+
+        df['sentiment'] = df['rating'].apply(map_sentiment)
+
+        # Se non è presente la colonna 'sentiment', eliminare la riga
+        df = df[df['sentiment'].notnull()]
+
+        # Seleziona solo le colonne 'text' e 'sentiment' da esportare
+        df_final = df[['text', 'sentiment']]
+
+        # Salva il nuovo dataset in un file CSV
+        df_final.to_csv(output_file, index=False)
+
+    @staticmethod
+    def remove_other_language(df, text_column):
+        """
+        Mantiene solo le righe di un DataFrame in cui il testo nella colonna specificata è in inglese.
+
+        Args:
+            df (pd.DataFrame): Il DataFrame da processare.
+            colonna_testo (str): Il nome della colonna contenente il testo.
+
+        Returns:
+            pd.DataFrame: Il DataFrame contenente solo righe con testo in inglese.
+        """
+
+        def is_english(text):
+            try:
+                return detect(text) == 'en'
+            except:
+                return False  # Esclude righe problematiche
+
+        # Filtra il DataFrame
+        tqdm.pandas(desc="Filtrando righe non in inglese")
+        df_filtrato = df[df[text_column].progress_apply(is_english)]
+        return df_filtrato
+
+    @staticmethod
+    def process_short_comments(dataset):
+        """
+        Elimina il 60% dei commenti con meno di 3 parole per ogni classe di sentiment.
+
+        Args:
+            dataset (pd.DataFrame): Il dataset deve avere colonne 'text' e 'sentiment'.
+
+        Returns:
+            pd.DataFrame: Il dataset processato.
+        """
+
+        def count_words(text):
+            """Conta il numero di parole in un testo."""
+            return len(text.split())
+
+        # Aggiungi una colonna per contare le parole in ogni commento
+        dataset['word_count'] = dataset['text'].apply(count_words)
+
+        # Filtra i commenti con meno di 3 parole
+        short_comments = dataset[dataset['word_count'] <= 4]
+
+        # Per ogni classe, rimuovi il 60% dei commenti sotto la soglia
+        indices_to_remove = []
+        for sentiment_class in short_comments['sentiment'].unique():
+            class_subset = short_comments[short_comments['sentiment'] == sentiment_class]
+            num_to_remove = int(len(class_subset) * 1)
+            if num_to_remove > 0:
+                indices_to_remove.extend(class_subset.sample(n=num_to_remove, random_state=42).index)
+
+        # Rimuovi i commenti selezionati dal dataset
+        dataset = dataset.drop(index=indices_to_remove)
+
+        # Rimuovi la colonna temporanea 'word_count'
+        dataset = dataset.drop(columns=['word_count'])
+
+        return dataset
+
+
+
+
+
+#ut = Utils()
+#dt = pd.read_csv("../../dataset/gold/es2/defmerge_undersample.csv")
 # newdt = ut.map_sentiment_labels(dt, "sentiment")
 # newdt.to_csv("../../dataset/silver/rtt.csv", index=False)
 
-# dt = pd.read_csv("../../dataset/gold/es2/defmerge_undersample.csv")
-# dt2 = ut.undersample_class(dt, "positive", "sentiment", 35000)
-# dt2.to_csv("../../dataset/gold/defmerge_undersample2.csv", index=False)
+#d = ut.remove_other_language(pd.read_csv("../../dataset/gold/solo_merged.csv"), "text")
+#d.to_csv("../../dataset/gold/solo_merged2.csv", index=False)
 
-# ut.remove_void_or_null("../../dataset/silver/tmp3.csv")
+#dataset = pd.read_csv("../../dataset/gold/solo_merged2.csv")
+#dataset2 = dataset[dataset['text'].apply(lambda x: len(x.split()) <= 50)]
+#dataset2.to_csv("../../dataset/gold/solo_merged3.csv", index=False)
 
-# tt1 = ut.oversample_with_smote(dt, "negative")
-# tt1.to_csv("../../dataset/gold/def_merged_test.csv", index=False)
 
-# tt1 = ut.oversample_with_smote(tt1, "neutral")
-# tt1.to_csv("../../dataset/gold/def_merged_test.csv", index=False)
+
+
+
+#dataset = ut.remove_other_language(pd.read_csv("../../dataset/silver/data_augmented.csv"), "text")
+#dataset_filtered = dataset[dataset['sentiment'] != 'positive']
+#s = process_short_comments(dataset)
+#dataset_filtered.to_csv("../../dataset/silver/ugmented-temp.csv", index=False)
+
+#dataset = pd.read_csv("../../dataset/silver/t.csv")
+#s = process_short_comments(dataset)
+#s.to_csv("../../dataset/silver/tt.csv", index=False)
+
+#dataset = pd.read_csv("../../dataset/gold/solo_merged3.csv")
+#s = process_short_comments(dataset)
+#s.to_csv("../../dataset/gold/solo_merged4.csv", index=False)
+
+
+
+
+#dataset = pd.read_csv("../../dataset/silver/syntetic_data.csv")
+#dataset_filtered = dataset[dataset['sentiment'] != 'positive']
+#dataset_filtered.to_csv("../../dataset/silver/syntetic_data.csv", index=False)
+
+#dd = filter_and_select("../../dataset/bronze/ready_to_train.csv")
+#dd.to_csv("../../dataset/bronze/ready_to_train3.csv", index=False)
+
+# ut.rating_to_sentiment('../../dataset/bronze/rate_my_professor.csv', '../../dataset/silver/rate_my_professor.csv')
+
+# dd = ut.oversample_with_smote(pd.read_csv("../../dataset/silver/rate_my_professor.csv"), "negative")
+# dd.to_csv("../../dataset/gold/solo_merged.csv", index=False)
+
+#dt = pd.read_csv("../../dataset/gold/solo_merged4.csv")
+#dt2 = ut.undersample_class(dt, "positive", "sentiment", 250000)
+#dt2.to_csv("../../dataset/gold/solo_merged5_temp.csv", index=False)
+
+# ut.remove_void_or_null("../../dataset/silver/feature_learn_reviews.csv")

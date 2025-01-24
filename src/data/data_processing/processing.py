@@ -6,9 +6,9 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-nltk.download("punkt")
-nltk.download("wordnet")
-nltk.download("stopwords")
+# nltk.download("punkt")
+# nltk.download("wordnet")
+# nltk.download("stopwords")
 
 class Preprocessor:
 
@@ -129,7 +129,7 @@ class Preprocessor:
             if len(word_tokenize(text)) >= min_words
         ]
     
-    def remove_long_lines(self, max_words=40):
+    def remove_long_lines(self, max_words=50):
         """
         Rimuove le righe che hanno piu di `max_words` parole.
         """
@@ -165,7 +165,7 @@ class Preprocessor:
             self.remove_punctuation()
             self.remove_stopwords()
             self.lemmatize()
-            self.remove_long_lines()
+            self.remove_long_lines(50)
             self.remove_short_lines(1)
 
             if file_path:

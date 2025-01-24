@@ -1,6 +1,6 @@
 import pickle
 from sklearn.model_selection import train_test_split
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, SVC
 from sklearn.preprocessing import MinMaxScaler
 
 import sys
@@ -39,7 +39,8 @@ class SVMTrainer:
             self.embedding_class = Embeddings(self.dataset)
 
             if self.embedding_type == "tfidf":
-                embedding = self.embedding_class.apply_tfidf_embedding()
+                self.embedding_class.load_embedding("./tfidf_embedding.pkl")
+                embedding = self.embedding_class.tfidf_embeddings
                 X = embedding.toarray()  # Convert sparse matrix to dense
 
             elif self.embedding_type == "word2vec":
@@ -65,7 +66,7 @@ class SVMTrainer:
             )
 
             # Initialize and train the SVM model
-            self.model = LinearSVC(
+            self.model = SVC(
                 C=1.0,  # Regularization parameter
                 random_state=42  # For reproducibility
             )
