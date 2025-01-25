@@ -112,7 +112,7 @@ def svm_predict_1(d_processing):
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, 1)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, 2)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)

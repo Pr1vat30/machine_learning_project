@@ -4,6 +4,9 @@ from sklearn.svm import LinearSVC, SVC
 from sklearn.preprocessing import MinMaxScaler
 
 import sys
+
+from sympy.stats.rv import probability
+
 sys.path.append("src/data/data_processing/")
 from embedding import Embeddings # type: ignore
 
@@ -39,9 +42,8 @@ class SVMTrainer:
             self.embedding_class = Embeddings(self.dataset)
 
             if self.embedding_type == "tfidf":
-                self.embedding_class.load_embedding("./tfidf_embedding.pkl")
-                embedding = self.embedding_class.tfidf_embeddings
-                X = embedding.toarray()  # Convert sparse matrix to dense
+                embedding = self.embedding_class.apply_tfidf_embedding()
+                X = embedding
 
             elif self.embedding_type == "word2vec":
                 scaler = MinMaxScaler()
@@ -67,12 +69,14 @@ class SVMTrainer:
 
             # Initialize and train the SVM model
             self.model = SVC(
-                C=1.0,  # Regularization parameter
-                random_state=42  # For reproducibility
+                C = 0.8,  # Regularization parameter
+                random_state=42,  # For reproducibility
+                probability=True,
+                verbose=True,
             )
             self.model.fit(X_train, y_train)
-            self.X_test = X_test
-            self.y_test = y_test
+            self.X_test, self.y_test = X_test, y_test
+            self.X_train, self.y_train = X_train, y_train
             print("SVM model trained successfully!")
 
         except ValueError as ve:
