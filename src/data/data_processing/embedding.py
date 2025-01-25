@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models import Word2Vec
 from sentence_transformers import SentenceTransformer
+from tqdm import tqdm
 
 
 class Embeddings:
@@ -107,7 +108,7 @@ class Embeddings:
 
     def apply_bert_embedding(self, filename="bert_embedding.pkl", model_name="bert-base-uncased"):
         """
-        Genera embeddings BERT, controlla se esistono e li salva se necessario.
+        Genera embeddings BERT, controlla se esistono e li salva se necessario, con barra di progresso.
         """
         if os.path.exists(filename):
             print(f"BERT embedding trovato in {filename}, caricamento in corso...")
@@ -116,10 +117,21 @@ class Embeddings:
             try:
                 texts = [text for text, _ in self.data]
                 model = SentenceTransformer(model_name)
-                self.embeddings = model.encode(texts)
+
+                # Inizializza la barra di progresso
+                print("Calcolo embeddings BERT...")
+                self.embeddings = []
+                for text in tqdm(texts, desc="Generazione embeddings", unit="text"):
+                    embedding = model.encode(text, show_progress_bar=False)
+                    self.embeddings.append(embedding)
+
+                self.embeddings = np.array(self.embeddings)  # Converte in array numpy
                 self.model = model
+
+                # Salva gli embeddings
                 self.save_embedding(filename, self.model, self.embeddings)
                 print(f"BERT embedding completato. Shape: {self.embeddings.shape}")
             except Exception as e:
                 print(f"Errore durante il calcolo del BERT embedding: {e}")
+
         return self.embeddings

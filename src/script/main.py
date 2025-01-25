@@ -31,7 +31,11 @@ def naive_bayes_predict_1(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metrics (TF-IDF):", metrics)
 
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
     print(f"Predicted sentiment (TF-IDF): {prediction}")
 
@@ -49,7 +53,11 @@ def naive_bayes_predict_2(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metrics (Word2Vec):", metrics)
 
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
     print(f"Predicted sentiment (Word2Vec): {prediction}")
 
@@ -67,7 +75,11 @@ def naive_bayes_predict_3(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metrics (BERT):", metrics)
 
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
     print(f"Predicted sentiment (BERT): {prediction}")
 
@@ -86,6 +98,7 @@ def naive_bayes_predict_loop(embedding_type):
         prediction = predictor.use_model(new_text)
         print(f"Il sentiment predetto è: {prediction}")
 
+
 def svm_predict_1(d_processing):
     # Train the SVM model
     trainer = SVMTrainer(d_processing.data_list, embedding_type="tfidf")
@@ -97,10 +110,13 @@ def svm_predict_1(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metrics (TF-IDF):", metrics)
 
-    # Predict new text
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, 1)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
-    print(f"Predicted sentiment: {prediction}")
+    print(f"Predicted sentiment (TF-IDF): {prediction}")
 
 def svm_predict_2(d_processing):
     # Train the SVM model
@@ -113,10 +129,13 @@ def svm_predict_2(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metrics (word2vec):", metrics)
 
-    # Predict new text
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
-    print(f"Predicted sentiment: {prediction}")
+    print(f"Predicted sentiment (TF-IDF): {prediction}")
 
 def svm_predict_3(d_processing):
     # Train the SVM model
@@ -129,10 +148,13 @@ def svm_predict_3(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metrics (bert):", metrics)
 
-    # Predict new text
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
-    print(f"Predicted sentiment: {prediction}")
+    print(f"Predicted sentiment (TF-IDF): {prediction}")
 
 def svm_predict_loop(embedding_type):
 
