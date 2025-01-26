@@ -33,7 +33,6 @@ def naive_bayes_predict_1(d_processing):
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
@@ -55,7 +54,6 @@ def naive_bayes_predict_2(d_processing):
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
@@ -77,7 +75,6 @@ def naive_bayes_predict_3(d_processing):
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
@@ -112,7 +109,7 @@ def svm_predict_1(d_processing):
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, 2)
+    predictor.plot_learning_curve(trainer.X_test, trainer.y_test)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
@@ -131,7 +128,7 @@ def svm_predict_2(d_processing):
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
+    predictor.plot_learning_curve(trainer.X_test, trainer.y_test)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
@@ -150,7 +147,7 @@ def svm_predict_3(d_processing):
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train)
+    predictor.plot_learning_curve(trainer.X_test, trainer.y_test)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
@@ -183,10 +180,13 @@ def log_reg_predict_1(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metriche (TF-IDF):", metrics)
 
-    # Uso del modello per fare predizioni
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_test, trainer.y_test)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
-    print(f"Sentiment predetto: {prediction}")
+    print(f"Predicted sentiment (TF-IDF): {prediction}")
 
 def log_reg_predict_2(d_processing):
     # Addestramento del modello
@@ -199,10 +199,13 @@ def log_reg_predict_2(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metriche (word2vec):", metrics)
 
-    # Uso del modello per fare predizioni
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_test, trainer.y_test)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
-    print(f"Sentiment predetto: {prediction}")
+    print(f"Predicted sentiment (TF-IDF): {prediction}")
 
 def log_reg_predict_3(d_processing):
     # Addestramento del modello
@@ -215,10 +218,13 @@ def log_reg_predict_3(d_processing):
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metriche (bert):", metrics)
 
-    # Uso del modello per fare predizioni
-    new_text = "didn't sleep well class like make feel stupid"
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_test, trainer.y_test)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
-    print(f"Sentiment predetto: {prediction}")
+    print(f"Predicted sentiment (TF-IDF): {prediction}")
 
 def log_reg_predict_loop(embedding_type):
 

@@ -43,7 +43,7 @@ class LogisticRegressionTrainer:
 
             if self.embedding_type == "tfidf":
                 embedding = self.embedding_class.apply_tfidf_embedding()
-                X = embedding.toarray()
+                X = embedding
 
             elif self.embedding_type == "word2vec":
                 scaler = MinMaxScaler()
@@ -67,8 +67,9 @@ class LogisticRegressionTrainer:
 
             # Addestramento del modello
             self.model.fit(X_train, y_train)
-            self.X_test = X_test
-            self.y_test = y_test
+
+            self.X_test, self.y_test = X_test, y_test
+            self.X_train, self.y_train = X_train, y_train
 
             print("Modello di regressione logistica allenato correttamente!")
 

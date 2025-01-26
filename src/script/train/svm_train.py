@@ -1,4 +1,6 @@
 import pickle
+
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC, SVC
 from sklearn.preprocessing import MinMaxScaler
@@ -68,15 +70,17 @@ class SVMTrainer:
             )
 
             # Initialize and train the SVM model
-            self.model = SVC(
-                C = 0.8,  # Regularization parameter
-                random_state=42,  # For reproducibility
-                probability=True,
-                verbose=True,
+            linear_svc = LinearSVC(
+                C=1.0,
+                random_state=42,
             )
+            self.model = CalibratedClassifierCV(linear_svc, method='sigmoid')
+
             self.model.fit(X_train, y_train)
+
             self.X_test, self.y_test = X_test, y_test
             self.X_train, self.y_train = X_train, y_train
+
             print("SVM model trained successfully!")
 
         except ValueError as ve:
