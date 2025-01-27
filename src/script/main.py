@@ -1,5 +1,8 @@
 import sys, argparse
 
+from testing.neural_network_test import NeuralNetworkPredictor
+from train.neural_network_train import NeuralNetworkTrainer
+
 sys.path.append("src/data/data_processing/")
 from processing import Preprocessor # type: ignore
 
@@ -243,20 +246,64 @@ def log_reg_predict_loop(embedding_type):
 
 
 def lstm_predict_1(d_processing):
-    # Addestramento
-    trainer = LSTMTrainer(d_processing.data_list, max_words=30000)
-    trainer.train_model(epochs=10)
-    trainer.save_model("./src/model/lstm/lstm_model.keras")
+    # Addestramento del modello
+    trainer = NeuralNetworkTrainer(d_processing.data_list, embedding_type="tfidf")
+    trainer.train_model()
+    trainer.save_model("./src/model/lstm/feedforward_tfidf.keras")
 
-    # Testing
-    tester = LSTMPredictor("./src/model/lstm/lstm_model.keras")
-    metrics = tester.evaluate_model(trainer.X_test, trainer.y_test)
-    print("Metriche di valutazione:", metrics)
+    # Valutazione del modello
+    predictor = NeuralNetworkPredictor()
+    predictor.load_model("./src/model/lstm/feedforward_tfidf.keras")
+    metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
+    print("Metriche (TF-IDF):", metrics)
 
-    # Utilizzo
-    test_text = "Adoro questo prodotto"
-    prediction = tester.use_model(test_text)
-    print(f"Predizione per '{test_text}': Classe {prediction}")
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
+    prediction = predictor.use_model(new_text)
+    print(f"Predicted sentiment (TF-IDF): {prediction}")
+
+def lstm_predict_2(d_processing):
+    # Addestramento del modello
+    trainer = NeuralNetworkTrainer(d_processing.data_list, embedding_type="word2vec")
+    trainer.train_model()
+    trainer.save_model("./src/model/lstm/lstm_word2vec.keras")
+
+    # Valutazione del modello
+    predictor = NeuralNetworkPredictor()
+    predictor.load_model("./src/model/lstm/lstm_word2vec.keras")
+    metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
+    print("Metriche (word2vec):", metrics)
+
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
+    prediction = predictor.use_model(new_text)
+    print(f"Predicted sentiment (word2vec): {prediction}")
+
+def lstm_predict_3(d_processing):
+    # Addestramento del modello
+    trainer = NeuralNetworkTrainer(d_processing.data_list, embedding_type="bert")
+    trainer.train_model()
+    trainer.save_model("./src/model/lstm/transformer_bert.keras")
+
+    # Valutazione del modello
+    predictor = NeuralNetworkPredictor()
+    predictor.load_model("./src/model/lstm/transformer_bert.keras")
+    metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
+    print("Metriche (bert):", metrics)
+
+    predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
+    predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
+    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
+
+    new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
+    prediction = predictor.use_model(new_text)
+    print(f"Predicted sentiment (bert): {prediction}")
 
 def lstm_predict_loop():
 
@@ -329,8 +376,12 @@ def main():
             log_reg_predict_2(d_processing)
         elif args.model == "logistic-regression" and args.embedding == "bert":
             log_reg_predict_3(d_processing)
-        elif args.model == "lstm":
+        elif args.model == "lstm" and args.embedding == "tfidf":
             lstm_predict_1(d_processing)
+        elif args.model == "lstm" and args.embedding == "word2vec":
+            lstm_predict_2(d_processing)
+        elif args.model == "lstm" and args.embedding == "bert":
+            lstm_predict_3(d_processing)
         else: print("Programa terminato con errore.")
 
     elif args.mode == "use":
@@ -347,6 +398,7 @@ def main():
 
     elif args.mode == "evaluation":
         evaluation_workflow(args.model, args.embedding)
+
 
 if __name__ == "__main__":
     main()

@@ -2,13 +2,10 @@ import pickle
 
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.model_selection import train_test_split
-from sklearn.svm import LinearSVC, SVC
+from sklearn.svm import LinearSVC
 from sklearn.preprocessing import MinMaxScaler
 
 import sys
-
-from sympy.stats.rv import probability
-
 sys.path.append("src/data/data_processing/")
 from embedding import Embeddings # type: ignore
 
