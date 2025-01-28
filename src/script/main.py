@@ -1,13 +1,7 @@
 import sys, argparse
 
-from testing.neural_network_test import NeuralNetworkPredictor
-from train.neural_network_train import NeuralNetworkTrainer
-
 sys.path.append("src/data/data_processing/")
 from processing import Preprocessor # type: ignore
-
-from train.lstm_train import LSTMTrainer
-from testing.lstm_test import LSTMPredictor
 
 from train.naive_bayes_train import NaiveBayesTrainer
 from testing.naive_bayes_test import NaiveBayesPredictor
@@ -17,6 +11,9 @@ from testing.svm_test import SVMPredictor
 
 from train.logistic_reg_train import LogisticRegressionTrainer
 from testing.logistic_reg_test import LogisticRegressionPredictor
+
+from testing.neural_network_test import NeuralNetworkPredictor
+from train.neural_network_train import NeuralNetworkTrainer
 
 
 def naive_bayes_predict_1(d_processing):
@@ -245,69 +242,70 @@ def log_reg_predict_loop(embedding_type):
         print(f"Il sentiment predetto è: {prediction}")
 
 
-def lstm_predict_1(d_processing):
+def neural_network_predict_1(d_processing):
     # Addestramento del modello
     trainer = NeuralNetworkTrainer(d_processing.data_list, embedding_type="tfidf")
     trainer.train_model()
-    trainer.save_model("./src/model/lstm/feedforward_tfidf.keras")
+    trainer.save_model("./src/model/neural_network/feedforward_tfidf.keras")
 
     # Valutazione del modello
-    predictor = NeuralNetworkPredictor()
-    predictor.load_model("./src/model/lstm/feedforward_tfidf.keras")
+    predictor = NeuralNetworkPredictor(trainer.model, trainer.embedding_class, embedding_type="tfidf")
+    predictor.load_model("./src/model/neural_network/feedforward_tfidf.keras")
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metriche (TF-IDF):", metrics)
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
+    predictor.plot_epoch_convergence(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
     print(f"Predicted sentiment (TF-IDF): {prediction}")
 
-def lstm_predict_2(d_processing):
+def neural_network_predict_2(d_processing):
     # Addestramento del modello
     trainer = NeuralNetworkTrainer(d_processing.data_list, embedding_type="word2vec")
     trainer.train_model()
-    trainer.save_model("./src/model/lstm/lstm_word2vec.keras")
+    trainer.save_model("./src/model/neural_network/feedforward_word2vec.keras")
 
     # Valutazione del modello
-    predictor = NeuralNetworkPredictor()
-    predictor.load_model("./src/model/lstm/lstm_word2vec.keras")
+    predictor = NeuralNetworkPredictor(trainer.model, trainer.embedding_class, embedding_type="word2vec")
+    predictor.load_model("./src/model/neural_network/feedforward_word2vec.keras")
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metriche (word2vec):", metrics)
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
+    predictor.plot_epoch_convergence(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
     print(f"Predicted sentiment (word2vec): {prediction}")
 
-def lstm_predict_3(d_processing):
+def neural_network_predict_3(d_processing):
     # Addestramento del modello
     trainer = NeuralNetworkTrainer(d_processing.data_list, embedding_type="bert")
     trainer.train_model()
-    trainer.save_model("./src/model/lstm/transformer_bert.keras")
+    trainer.save_model("./src/model/neural_network/feedforward_bert.keras")
 
     # Valutazione del modello
-    predictor = NeuralNetworkPredictor()
-    predictor.load_model("./src/model/lstm/transformer_bert.keras")
+    predictor = NeuralNetworkPredictor(trainer.model, trainer.embedding_class, embedding_type="bert")
+    predictor.load_model("./src/model/neural_network/feedforward_bert.keras")
     metrics = predictor.evaluate_model(trainer.X_test, trainer.y_test)
     print("Metriche (bert):", metrics)
 
     predictor.plot_confusion_matrix(trainer.X_test, trainer.y_test)
     predictor.plot_roc_curve(trainer.X_test, trainer.y_test)
-    predictor.plot_learning_curve(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
+    predictor.plot_epoch_convergence(trainer.X_train, trainer.y_train, trainer.X_test, trainer.y_test)
 
     new_text = "I really dislike going to school lately; it’s been exhausting and not motivating"
     prediction = predictor.use_model(new_text)
     print(f"Predicted sentiment (bert): {prediction}")
 
-def lstm_predict_loop():
+def neural_network_predict_loop(embedding_type):
 
-    predictor = LSTMPredictor("./src/model/lstm/lstm_model.keras")
+    predictor = NeuralNetworkPredictor(embedding_type=f"{embedding_type}")
+    predictor.load_model(f"./src/model/neural_network/feedforward_{embedding_type}.keras")
 
     while True:
         new_text = input("Inserisci una frase (digita 'exit' per terminare): ")
@@ -339,9 +337,9 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        choices=["svm", "logistic-regression", "naive-bayes", "lstm"],
+        choices=["svm", "logistic-regression", "naive-bayes", "neural-network"],
         required=True,
-        help="Choose the model to use: SVM, Logistic Regression, Naive Bayes, or LSTM."
+        help="Choose the model to use: SVM, Logistic Regression, Naive Bayes, or Neural Network."
     )
     parser.add_argument(
         "--embedding",
@@ -376,12 +374,12 @@ def main():
             log_reg_predict_2(d_processing)
         elif args.model == "logistic-regression" and args.embedding == "bert":
             log_reg_predict_3(d_processing)
-        elif args.model == "lstm" and args.embedding == "tfidf":
-            lstm_predict_1(d_processing)
-        elif args.model == "lstm" and args.embedding == "word2vec":
-            lstm_predict_2(d_processing)
-        elif args.model == "lstm" and args.embedding == "bert":
-            lstm_predict_3(d_processing)
+        elif args.model == "neural-network" and args.embedding == "tfidf":
+            neural_network_predict_1(d_processing)
+        elif args.model == "neural-network" and args.embedding == "word2vec":
+            neural_network_predict_2(d_processing)
+        elif args.model == "neural-network" and args.embedding == "bert":
+            neural_network_predict_3(d_processing)
         else: print("Programa terminato con errore.")
 
     elif args.mode == "use":
@@ -392,8 +390,8 @@ def main():
             svm_predict_loop(args.embedding)
         elif args.model == "logistic-regression" and args.embedding:
             log_reg_predict_loop(args.embedding)
-        elif args.model == "lstm":
-            lstm_predict_loop()
+        elif args.model == "neural-network" and args.embedding:
+            neural_network_predict_loop(args.embedding)
         else: print("Programa terminato con errore.")
 
     elif args.mode == "evaluation":

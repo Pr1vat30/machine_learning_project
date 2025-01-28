@@ -8,15 +8,14 @@ from sklearn.preprocessing import LabelBinarizer
 
 class NeuralNetworkPredictor:
     """
-    Questa classe gestisce la valutazione e l'utilizzo dei modelli addestrati dalla classe SentimentAnalysisModel.
-    Supporta modelli feedforward, LSTM e BERT.
+    Questa classe gestisce la valutazione e l'utilizzo dei modelli addestrati.
     """
 
     def __init__(self, trained_model=None, embedding_class=None, embedding_type="tfidf"):
         """
         Inizializza il predictor con il modello addestrato, la classe di embedding e il tipo di embedding.
 
-        :param trained_model: Il modello addestrato (feedforward, LSTM o BERT).
+        :param trained_model: Il modello addestrato (feedforward).
         :param embedding_class: La classe utilizzata per la vettorizzazione del testo.
         :param embedding_type: Tipo di embedding utilizzato ('tfidf', 'word2vec', 'bert').
         """
@@ -69,22 +68,30 @@ class NeuralNetworkPredictor:
 
         # Trasforma il nuovo testo nel formato di embedding appropriato
         if self.embedding_type == "tfidf":
-            embeddings = self.embedding_class.apply_tfidf_embedding(texts=[text])
+            embeddings = self.embedding_class.model.transform([text])
             X = embeddings.toarray()
 
         elif self.embedding_type == "word2vec":
-            embeddings = self.embedding_class.apply_word2vec_embedding(texts=[text])
+            embeddings = [
+                self.embedding_class.model.wv[word]
+                for word in text.split() if word in self.embedding_class.model.wv
+            ]
             X = np.mean(embeddings, axis=0).reshape(1, -1)
 
         elif self.embedding_type == "bert":
-            embeddings = self.embedding_class.apply_bert_embedding(texts=[text])
+            embeddings = self.embedding_class.model.encode([text])
             X = np.mean(embeddings, axis=0).reshape(1, -1)
 
         else:
             raise ValueError(f"Tipo di embedding '{self.embedding_type}' non supportato.")
 
-        # Predice la classe di sentiment
-        return self.model.predict(X)[0]
+        prediction = self.model.predict(X)
+
+        predicted_class = np.argmax(prediction, axis=1)
+
+        mapping = {0: "negative", 1: "neutral", 2: "positive"}
+
+        return mapping[predicted_class[0]] if len(predicted_class) == 1 else [mapping[c] for c in predicted_class]
 
     def load_model(self, filepath):
         """
@@ -155,42 +162,54 @@ class NeuralNetworkPredictor:
         plt.title("Matrice di Confusione")
         plt.show()
 
-    def plot_learning_curve(self, X_train, y_train, X_test, y_test):
+    def plot_epoch_convergence(self, X_train, y_train, X_test, y_test, epochs=5, batch_size=32):
         """
-        Traccia la curva di apprendimento per il modello sui dati di training.
+        Traccia il grafico di convergenza durante le epoche per il modello.
 
         :param X_train: Dati di training (embedding del testo).
         :param y_train: Etichette di training.
         :param X_test: Dati di test (embedding del testo).
         :param y_test: Etichette di test.
-        :param cv: Numero di fold per la cross-validation (non utilizzato in questa implementazione).
+        :param epochs: Numero di epoche per il training.
+        :param batch_size: Dimensione del batch per il training.
         """
-        # Definisci le porzioni del dataset di training da utilizzare
-        train_sizes = np.linspace(0.1, 1.0, 10)  # Usa 10 punti tra il 10% e il 100% del dataset
-        train_scores = []  # Accuratezza sul training set
-        test_scores = []   # Accuratezza sul validation set
+        # Addestra il modello e registra la cronologia
+        history = self.model.fit(
+            X_train, y_train,
+            validation_data=(X_test, y_test),
+            epochs=epochs,
+            batch_size=batch_size,
+            verbose=1
+        )
 
-        for size in train_sizes:
-            # Seleziona una porzione del dataset di training
-            n_samples = int(size * X_train.shape[0])
-            X_subset, _, y_subset, _ = train_test_split(X_train, y_train, train_size=n_samples, random_state=42)
+        # Ottieni le metriche dal training e dal validation set
+        train_accuracy = history.history["accuracy"]
+        val_accuracy = history.history["val_accuracy"]
+        train_loss = history.history["loss"]
+        val_loss = history.history["val_loss"]
 
-            # Addestra il modello sulla porzione selezionata
-            self.model.fit(X_subset, y_subset, epochs=5, batch_size=32, verbose=1)
+        # Traccia i grafici della convergenza
+        plt.figure(figsize=(14, 6))
 
-            # Valuta il modello sul training set e sul validation set
-            train_score = self.model.evaluate(X_subset, y_subset, verbose=0)[1]  # Accuratezza
-            test_score = self.model.evaluate(X_test, y_test, verbose=0)[1]       # Accuratezza
-
-            train_scores.append(train_score)
-            test_scores.append(test_score)
-
-        # Traccia la curva di apprendimento
-        plt.plot(train_sizes, train_scores, "o-", color="r", label="Training score")
-        plt.plot(train_sizes, test_scores, "o-", color="g", label="Validation score")
-        plt.xlabel("Porzione del Training Set")
+        # Grafico dell'accuratezza
+        plt.subplot(1, 2, 1)
+        plt.plot(range(1, epochs + 1), train_accuracy, "o-", label="Training Accuracy")
+        plt.plot(range(1, epochs + 1), val_accuracy, "o-", label="Validation Accuracy")
+        plt.xlabel("Epoche")
         plt.ylabel("Accuratezza")
-        plt.title("Curva di Apprendimento")
+        plt.title("Convergenza dell'accuratezza")
         plt.legend(loc="best")
         plt.grid()
+
+        # Grafico della perdita
+        plt.subplot(1, 2, 2)
+        plt.plot(range(1, epochs + 1), train_loss, "o-", label="Training Loss")
+        plt.plot(range(1, epochs + 1), val_loss, "o-", label="Validation Loss")
+        plt.xlabel("Epoche")
+        plt.ylabel("Perdita")
+        plt.title("Convergenza della perdita")
+        plt.legend(loc="best")
+        plt.grid()
+
+        plt.tight_layout()
         plt.show()
