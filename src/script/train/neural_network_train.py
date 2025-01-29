@@ -31,13 +31,14 @@ class NeuralNetworkTrainer:
 
     def _create_feedforward_tfidf(self, input_shape):
         """ Crea una rete neurale fully connected (feedforward) """
-        self.model = Sequential()
-        self.model.add(Input(shape=(input_shape,)))  # Aggiungi un layer Input
-        self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(64, activation='relu'))
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(3, activation='softmax'))  # 3 classi in output
+        self.model = Sequential([
+            Input(shape=(input_shape,)),
+            Dense(128, activation='relu'),
+            Dropout(0.3),
+            Dense(64, activation='relu'),
+            Dropout(0.3),
+            Dense(3, activation='softmax')
+        ])
         self.model.compile(optimizer="adam", loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     def _create_feedforward_word2vec(self, input_shape):
@@ -48,7 +49,7 @@ class NeuralNetworkTrainer:
             # Primo blocco
             Dense(256, activation=None),
             BatchNormalization(),
-            ReLU(),  # Attivazione
+            ReLU(),
             Dropout(0.3),
 
             # Secondo blocco
@@ -75,7 +76,7 @@ class NeuralNetworkTrainer:
 
             # Primo blocco
             Dense(512),
-            LeakyReLU(negative_slope=0.1),  # Attivazione avanzata
+            LeakyReLU(negative_slope=0.1),
             BatchNormalization(),
             Dropout(0.3),
 
